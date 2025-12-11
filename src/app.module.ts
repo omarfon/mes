@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -12,9 +13,12 @@ import { QualityModule } from './quality/quality.module';
 import { TraceabilityModule } from './traceability/traceability.module';
 import { ReportsModule } from './reports/reports.module';
 import { IntegrationModule } from './integration/integration.module';
+import { IotIngestionModule } from './iot-ingestion/iot-ingestion.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, MasterDataModule, ProductionOrdersModule, DispatchingModule, DataCollectionModule, MonitoringModule, QualityModule, TraceabilityModule, ReportsModule, IntegrationModule],
+  imports:  [  TypeOrmModule.forRoot({
+      // config de conexión a DB
+    }),AuthModule, UsersModule, MasterDataModule, ProductionOrdersModule, DispatchingModule, DataCollectionModule, MonitoringModule, QualityModule, TraceabilityModule, ReportsModule, IntegrationModule, IotIngestionModule],
   controllers: [AppController],
   providers: [AppService],
 })
