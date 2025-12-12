@@ -1,8 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+
+  // Swagger Config
+  const config = new DocumentBuilder()
+    .setTitle('API MES')
+    .setDescription('Documentación de la API del Sistema MES')
+    .setVersion('1.0')
+    .addBearerAuth() // Si usas JWT
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  await app.listen(3000);
+  console.log(`Swagger levantado en: http://localhost:3000/api/docs`);
 }
 bootstrap();

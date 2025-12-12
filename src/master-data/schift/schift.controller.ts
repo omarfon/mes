@@ -1,34 +1,84 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { SchiftService } from './schift.service';
-import { CreateSchiftDto } from './dto/create-schift.dto';
-import { UpdateSchiftDto } from './dto/update-schift.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { CreateShiftDto } from './dto/create-schift.dto';
+import { FilterShiftsDto } from './dto/filter-schift.dto';
+import { UpdateShiftDto } from './dto/update-schift.dto';
+import { ShiftsService } from './schift.service';
 
-@Controller('schift')
-export class SchiftController {
-  constructor(private readonly schiftService: SchiftService) {}
 
+@Controller('shifts')
+export class ShiftsController {
+  constructor(private readonly shiftsService: ShiftsService) {}
+
+  /**
+   * Crear turno
+   * POST /shifts
+   */
   @Post()
-  create(@Body() createSchiftDto: CreateSchiftDto) {
-    return this.schiftService.create(createSchiftDto);
+  async create(@Body() dto: CreateShiftDto) {
+    return this.shiftsService.create(dto);
   }
 
+  /**
+   * Listar turnos con filtros/paginación
+   * GET /shifts?search=&isActive=&page=&limit=
+   */
   @Get()
-  findAll() {
-    return this.schiftService.findAll();
+  async findAll(@Query() filter: FilterShiftsDto) {
+    return this.shiftsService.findAll(filter);
   }
 
+  /**
+   * Obtener turno por ID
+   * GET /shifts/:id
+   */
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.schiftService.findOne(+id);
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.shiftsService.findOne(id);
   }
 
+  /**
+   * Actualizar turno
+   * PATCH /shifts/:id
+   */
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSchiftDto: UpdateSchiftDto) {
-    return this.schiftService.update(+id, updateSchiftDto);
+  async update(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateShiftDto,
+  ) {
+    return this.shiftsService.update(id, dto);
   }
 
+  /**
+   * Activar / desactivar turno
+   * PATCH /shifts/:id/active
+   */
+  @Patch(':id/active')
+  async toggleActive(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body('isActive') isActive: boolean,
+  ) {
+    return this.shiftsService.toggleActive(id, isActive);
+  }
+
+  /**
+   * Borrado lógico
+   * DELETE /shifts/:id
+   */
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.schiftService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.shiftsService.softDelete(id);
   }
 }

@@ -29,8 +29,8 @@ export class UsersService {
       throw new ConflictException('Email already in use');
     }
 
-    // const passwordHash = await bcrypt.hash(dto.password, 10);
-    const passwordHash = dto.password; // TODO: reemplazar por hash real
+    const passwordHash = await bcrypt.hash(dto.password, 10);
+    //const passwordHash = dto.password; // TODO: reemplazar por hash real
 
     const user = this.usersRepo.create({
       firstName: dto.firstName,

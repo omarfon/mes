@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, Query, HttpStatus, HttpCode } from '@nestjs/common';
 import { CreateMachineDto } from '../dtos/create-machine.dto';
-import { UpdateMachineDto } from './update-machine.dto';
+
 import { MachinesService } from '../services/machines.service';
-import { FilterMachinesDto } from './filter-machine.dto';
+import { FilterMachinesDto } from '../dtos/filter-machine.dto';
+import { UpdateMachineDto } from '../dtos/update-machine.dto';
+
 
 @Controller('machines')
 export class MachinesController {

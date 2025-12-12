@@ -7,7 +7,7 @@ import { MachinesService } from './services/machines.service';
 import { UsersModule } from '../users/users.module';
 import { ProductsModule } from '../products/products.module';
 import { WorkCentersModule } from '../work-centers/work-centers.module';
-import { SchiftModule } from '../schift/schift.module';
+
 
 
 @Module({
@@ -16,7 +16,6 @@ import { SchiftModule } from '../schift/schift.module';
     UsersModule,
     ProductsModule,
     WorkCentersModule,
-    SchiftModule,
   ],
   controllers: [MachinesController],
   providers: [MachinesService],

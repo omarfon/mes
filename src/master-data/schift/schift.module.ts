@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
-import { SchiftService } from './schift.service';
-import { SchiftController } from './schift.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Shift } from './entities/schift.entity';
+import { ShiftsController } from './schift.controller';
+import { ShiftsService } from './schift.service';
+
 
 @Module({
-  controllers: [SchiftController],
-  providers: [SchiftService],
+  imports: [TypeOrmModule.forFeature([Shift])],
+  controllers: [ShiftsController],
+  providers: [ShiftsService],
+  exports: [ShiftsService, TypeOrmModule],
 })
-export class SchiftModule {}
+export class ShiftsModule {}
