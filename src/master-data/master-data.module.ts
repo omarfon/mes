@@ -1,15 +1,25 @@
 import { Module } from '@nestjs/common';
-import { MasterDataService } from './master-data.service';
-import { MasterDataController } from './master-data.controller';
 import { MachinesController } from './machines/controllers/machines.controller';
-import { ProductsController } from './controllers/products.controller';
-import { WorkCentersController } from './controllers/work-centers.controller';
-import { SchiftController } from './controllers/schift.controller';
+import { UsersController } from 'src/users/users.controller';
+import { ProductsController } from './products/products.controller';
+import { WorkCentersController } from './work-centers/work-centers.controller';
+import { SchiftController } from './schift/schift.controller';
+import { ProductsModule } from './products/products.module';
+import { MachinesModule } from './machines/machines.module';
+import { UsersModule } from 'src/users/users.module';
 
 
 
 @Module({
-  controllers: [MasterDataController, MachinesController, ProductsController, WorkCentersController, SchiftController],
-  providers: [MasterDataService],
+  imports:[MachinesModule,
+          UsersModule,
+          ProductsModule],
+  controllers: [
+                MachinesController, 
+                UsersController, 
+                ProductsController, 
+                WorkCentersController, 
+                SchiftController],
+  providers: [],
 })
 export class MasterDataModule {}
