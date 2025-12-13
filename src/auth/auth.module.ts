@@ -16,12 +16,15 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
-        signOptions: {
-          expiresIn: config.get<string>('JWT_EXPIRES_IN') || '1d',
-        },
-      }),
+      useFactory: (config: ConfigService) => {
+        const expiresIn = config.get<number>('JWT_EXPIRES_IN') || '1d';
+        return {
+          secret: config.get<string>('JWT_SECRET'),
+          signOptions: {
+            expiresIn: expiresIn,
+          },
+        };
+      },
     }),
     UsersModule,
   ],
