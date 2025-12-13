@@ -3,7 +3,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './master-data/users/users.module';
 import { MasterDataModule } from './master-data/master-data.module';
 import { ProductionOrdersModule } from './production-orders/production-orders.module';
 import { DispatchingModule } from './dispatching/dispatching.module';
