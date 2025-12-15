@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateQualityDto } from './dto/create-quality.dto';
-import { UpdateQualityDto } from './dto/update-quality.dto';
+import { CreateQualityDto } from './dto/create-inspection.dto';
+import { UpdateQualityDto } from './dto/add-deffect.dto';
 
 @Injectable()
 export class QualityService {

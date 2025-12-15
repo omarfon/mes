@@ -28,7 +28,7 @@ export class ProductionOrdersService {
     private readonly routeOpRepo: Repository<RouteOperation>,
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
-  ) {}
+  ) { }
 
   async create(dto: CreateProductionOrderDto): Promise<ProductionOrder> {
     // Validar código único

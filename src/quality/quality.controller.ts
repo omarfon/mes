@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { QualityService } from './quality.service';
-import { CreateQualityDto } from './dto/create-quality.dto';
-import { UpdateQualityDto } from './dto/update-quality.dto';
+import { CreateQualityDto } from './dto/create-inspection.dto';
+import { UpdateQualityDto } from './dto/add-deffect.dto';
 
 @Controller('quality')
 export class QualityController {

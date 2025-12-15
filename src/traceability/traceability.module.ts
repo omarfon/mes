@@ -3,6 +3,7 @@ import { TraceabilityService } from './traceability.service';
 import { TraceabilityController } from './traceability.controller';
 
 @Module({
+  imports: [TraceabilityModule],
   controllers: [TraceabilityController],
   providers: [TraceabilityService],
 })

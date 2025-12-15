@@ -8,6 +8,9 @@ import {
 export class UpdateProductionOrderDto extends PartialType(
   CreateProductionOrderDto,
 ) {
+  /**
+   * Actualizar estado de la orden explícitamente (opcional)
+   */
   @IsOptional()
   @IsEnum(ProductionOrderStatus)
   status?: ProductionOrderStatus;
