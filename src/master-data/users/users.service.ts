@@ -128,4 +128,6 @@ export class UsersService {
   async softDelete(id: string): Promise<void> {
     await this.usersRepo.softDelete(id);
   }
+
+  
 }
