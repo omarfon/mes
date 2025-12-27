@@ -27,8 +27,8 @@ export class AuthService {
     }
 
     return user;
-  }
- */
+  } */
+
    async login({ username, password }: { username: string; password: string }) {
     // Aquí debería ir tu validación real contra BD:
     const user = await this.validateUser(username, password);
@@ -71,5 +71,23 @@ export class AuthService {
     user,
   };
 }
+
+ logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('current_user');
+  }
+
+  get token(): string | null {
+    return localStorage.getItem('access_token');
+  }
+
+  get currentUser() {
+    const raw = localStorage.getItem('current_user');
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.token;
+  }
 
 }

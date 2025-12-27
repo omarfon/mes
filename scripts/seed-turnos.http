@@ -1,0 +1,50 @@
+### Crear Turno Mañana
+POST http://localhost:3000/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T1",
+  "nombre": "Turno Mañana",
+  "horaInicio": "06:00",
+  "horaFin": "14:00",
+  "duracionHoras": 8,
+  "descripcion": "Turno de mañana - Producción general",
+  "activo": true,
+  "diasSemana": [1, 2, 3, 4, 5],
+  "color": "#3498db"
+}
+
+### Crear Turno Tarde
+POST http://localhost:3000/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T2",
+  "nombre": "Turno Tarde",
+  "horaInicio": "14:00",
+  "horaFin": "22:00",
+  "duracionHoras": 8,
+  "descripcion": "Turno de tarde - Producción general",
+  "activo": true,
+  "diasSemana": [1, 2, 3, 4, 5],
+  "color": "#e67e22"
+}
+
+### Crear Turno Noche
+POST http://localhost:3000/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T3",
+  "nombre": "Turno Noche",
+  "horaInicio": "22:00",
+  "horaFin": "06:00",
+  "duracionHoras": 8,
+  "descripcion": "Turno nocturno - Producción especial",
+  "activo": true,
+  "diasSemana": [1, 2, 3, 4, 5],
+  "color": "#9b59b6"
+}
+
+### Listar todos los turnos
+GET http://localhost:3000/turnos

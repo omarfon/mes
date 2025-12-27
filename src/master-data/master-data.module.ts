@@ -8,6 +8,11 @@ import { RoutesModule } from './routes/routes.module';
 import { ShiftsModule } from './schift/schift.module';
 import { WorkCentersModule } from './work-centers/work-centers.module';
 import { UsersModule } from './users/users.module';
+import { TurnosModule } from './turnos/turnos.module';
+import { UnidadesMedidaModule } from './unidades-medida/unidades-medida.module';
+import { OperadoresModule } from './operadores/operadores.module';
+import { MotivosParadaModule } from './motivos-parada/motivos-parada.module';
+import { ProcesosModule } from './procesos/procesos.module';
 
 
 
@@ -17,7 +22,12 @@ import { UsersModule } from './users/users.module';
           ProductsModule,
           RoutesModule,
           ShiftsModule,
-          WorkCentersModule],
+          WorkCentersModule,
+          TurnosModule,
+          UnidadesMedidaModule,
+          OperadoresModule,
+          MotivosParadaModule,
+          ProcesosModule],
   controllers: [
                 MachinesController, 
                 ProductsController, 

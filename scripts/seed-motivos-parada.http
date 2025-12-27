@@ -1,0 +1,140 @@
+### Crear Motivo - Falta de Material
+POST http://localhost:3000/motivos-parada
+Content-Type: application/json
+
+{
+  "codigo": "MP001",
+  "nombre": "Falta de material",
+  "descripcion": "Parada por falta de materia prima o componentes",
+  "categoria": "MATERIALES",
+  "tipo": "MEDIA",
+  "requiereAprobacion": false,
+  "requiereComentario": true,
+  "requiereEvidencia": false,
+  "color": "#e74c3c",
+  "icono": "📦",
+  "tiempoEstandardMinutos": 30,
+  "prioridad": 2,
+  "impactaOEE": true,
+  "departamentoResponsable": "Logística",
+  "accionesCorrectivas": ["Verificar stock", "Contactar proveedor", "Revisar planificación"],
+  "activo": true
+}
+
+### Crear Motivo - Mantenimiento Preventivo
+POST http://localhost:3000/motivos-parada
+Content-Type: application/json
+
+{
+  "codigo": "MP002",
+  "nombre": "Mantenimiento preventivo",
+  "descripcion": "Parada programada para mantenimiento preventivo",
+  "categoria": "PLANIFICADA",
+  "tipo": "LARGA",
+  "requiereAprobacion": true,
+  "requiereComentario": true,
+  "requiereEvidencia": true,
+  "color": "#3498db",
+  "icono": "🔧",
+  "tiempoEstandardMinutos": 120,
+  "prioridad": 3,
+  "impactaOEE": false,
+  "departamentoResponsable": "Mantenimiento",
+  "accionesCorrectivas": ["Seguir plan de mantenimiento", "Documentar actividades"],
+  "activo": true
+}
+
+### Crear Motivo - Cambio de Formato
+POST http://localhost:3000/motivos-parada
+Content-Type: application/json
+
+{
+  "codigo": "MP003",
+  "nombre": "Cambio de formato",
+  "descripcion": "Parada por cambio de formato o setup de máquina",
+  "categoria": "PRODUCCION",
+  "tipo": "MEDIA",
+  "requiereAprobacion": false,
+  "requiereComentario": false,
+  "requiereEvidencia": false,
+  "color": "#f39c12",
+  "icono": "⚙️",
+  "tiempoEstandardMinutos": 45,
+  "prioridad": 3,
+  "impactaOEE": true,
+  "departamentoResponsable": "Producción",
+  "accionesCorrectivas": ["Optimizar tiempo de setup", "SMED"],
+  "activo": true
+}
+
+### Crear Motivo - Falla Mecánica
+POST http://localhost:3000/motivos-parada
+Content-Type: application/json
+
+{
+  "codigo": "MP004",
+  "nombre": "Falla mecánica",
+  "descripcion": "Parada por falla mecánica no planificada",
+  "categoria": "NO_PLANIFICADA",
+  "tipo": "LARGA",
+  "requiereAprobacion": false,
+  "requiereComentario": true,
+  "requiereEvidencia": true,
+  "color": "#c0392b",
+  "icono": "⚠️",
+  "tiempoEstandardMinutos": 90,
+  "prioridad": 1,
+  "impactaOEE": true,
+  "departamentoResponsable": "Mantenimiento",
+  "accionesCorrectivas": ["Diagnosticar falla", "Reparar componente", "Analizar causa raíz"],
+  "activo": true
+}
+
+### Crear Motivo - Defecto de Calidad
+POST http://localhost:3000/motivos-parada
+Content-Type: application/json
+
+{
+  "codigo": "MP005",
+  "nombre": "Defecto de calidad",
+  "descripcion": "Parada por detección de defectos de calidad",
+  "categoria": "CALIDAD",
+  "tipo": "CORTA",
+  "requiereAprobacion": false,
+  "requiereComentario": true,
+  "requiereEvidencia": true,
+  "color": "#e67e22",
+  "icono": "🔍",
+  "tiempoEstandardMinutos": 20,
+  "prioridad": 1,
+  "impactaOEE": true,
+  "departamentoResponsable": "Calidad",
+  "accionesCorrectivas": ["Revisar parámetros", "Ajustar proceso", "Verificar especificaciones"],
+  "activo": true
+}
+
+### Crear Motivo - Falta de Personal
+POST http://localhost:3000/motivos-parada
+Content-Type: application/json
+
+{
+  "codigo": "MP006",
+  "nombre": "Falta de personal",
+  "descripcion": "Parada por ausencia de operadores",
+  "categoria": "PERSONAL",
+  "tipo": "MEDIA",
+  "requiereAprobacion": false,
+  "requiereComentario": true,
+  "requiereEvidencia": false,
+  "color": "#9b59b6",
+  "icono": "👥",
+  "tiempoEstandardMinutos": 60,
+  "prioridad": 2,
+  "impactaOEE": true,
+  "departamentoResponsable": "Recursos Humanos",
+  "accionesCorrectivas": ["Buscar reemplazo", "Reorganizar turnos"],
+  "activo": true
+}
+
+### Listar todos los motivos
+GET http://localhost:3000/motivos-parada

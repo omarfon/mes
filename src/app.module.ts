@@ -15,6 +15,9 @@ import { ReportsModule } from './reports/reports.module';
 import { IntegrationModule } from './integration/integration.module';
 import { IotIngestionModule } from './iot-ingestion/iot-ingestion.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ActivityLogModule } from './activity-log/activity-log.module';
 import databaseConfig from './config/database-config';
 
 @Module({
@@ -50,7 +53,7 @@ import databaseConfig from './config/database-config';
         TraceabilityModule, 
         ReportsModule, 
         IntegrationModule, 
-        IotIngestionModule],
+        IotIngestionModule, DashboardModule, NotificationsModule, ActivityLogModule],
   controllers: [AppController],
   providers: [AppService],
 })

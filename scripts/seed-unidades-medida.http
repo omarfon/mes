@@ -1,0 +1,98 @@
+### Crear Unidad - Kilogramo
+POST http://localhost:3000/unidades-medida
+Content-Type: application/json
+
+{
+  "codigo": "KG",
+  "nombre": "Kilogramo",
+  "simbolo": "kg",
+  "tipo": "MASA",
+  "descripcion": "Unidad de masa del Sistema Internacional",
+  "factorConversion": 1,
+  "esSI": true,
+  "activo": true,
+  "decimales": 3
+}
+
+### Crear Unidad - Gramo
+POST http://localhost:3000/unidades-medida
+Content-Type: application/json
+
+{
+  "codigo": "G",
+  "nombre": "Gramo",
+  "simbolo": "g",
+  "tipo": "MASA",
+  "descripcion": "Unidad de masa",
+  "factorConversion": 0.001,
+  "esSI": true,
+  "activo": true,
+  "decimales": 2
+}
+
+### Crear Unidad - Metro
+POST http://localhost:3000/unidades-medida
+Content-Type: application/json
+
+{
+  "codigo": "M",
+  "nombre": "Metro",
+  "simbolo": "m",
+  "tipo": "LONGITUD",
+  "descripcion": "Unidad de longitud del Sistema Internacional",
+  "factorConversion": 1,
+  "esSI": true,
+  "activo": true,
+  "decimales": 3
+}
+
+### Crear Unidad - Litro
+POST http://localhost:3000/unidades-medida
+Content-Type: application/json
+
+{
+  "codigo": "L",
+  "nombre": "Litro",
+  "simbolo": "l",
+  "tipo": "VOLUMEN",
+  "descripcion": "Unidad de volumen",
+  "factorConversion": 1,
+  "esSI": false,
+  "activo": true,
+  "decimales": 2
+}
+
+### Crear Unidad - Unidad (pieza)
+POST http://localhost:3000/unidades-medida
+Content-Type: application/json
+
+{
+  "codigo": "UND",
+  "nombre": "Unidad",
+  "simbolo": "un",
+  "tipo": "CANTIDAD",
+  "descripcion": "Unidad de cantidad - Pieza",
+  "factorConversion": 1,
+  "esSI": false,
+  "activo": true,
+  "decimales": 0
+}
+
+### Crear Unidad - Hora
+POST http://localhost:3000/unidades-medida
+Content-Type: application/json
+
+{
+  "codigo": "HR",
+  "nombre": "Hora",
+  "simbolo": "h",
+  "tipo": "TIEMPO",
+  "descripcion": "Unidad de tiempo",
+  "factorConversion": 3600,
+  "esSI": false,
+  "activo": true,
+  "decimales": 2
+}
+
+### Listar todas las unidades
+GET http://localhost:3000/unidades-medida

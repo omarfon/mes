@@ -1,0 +1,82 @@
+### Crear Operador 1
+POST http://localhost:3000/operadores
+Content-Type: application/json
+
+{
+  "codigo": "OP001",
+  "numeroEmpleado": "EMP-2024-001",
+  "nombre": "Juan",
+  "apellidos": "García López",
+  "email": "juan.garcia@empresa.com",
+  "telefono": "+34 600 123 456",
+  "estado": "ACTIVO",
+  "nivelHabilidad": "AVANZADO",
+  "departamento": "Producción",
+  "puesto": "Operador de máquina CNC",
+  "fechaIngreso": "2022-01-15",
+  "certificaciones": ["ISO 9001", "Seguridad Industrial", "CNC Básico"],
+  "habilidades": ["CNC", "Soldadura", "Control de calidad"]
+}
+
+### Crear Operador 2
+POST http://localhost:3000/operadores
+Content-Type: application/json
+
+{
+  "codigo": "OP002",
+  "numeroEmpleado": "EMP-2024-002",
+  "nombre": "María",
+  "apellidos": "Rodríguez Sánchez",
+  "email": "maria.rodriguez@empresa.com",
+  "telefono": "+34 600 234 567",
+  "estado": "ACTIVO",
+  "nivelHabilidad": "EXPERTO",
+  "departamento": "Producción",
+  "puesto": "Supervisora de línea",
+  "fechaIngreso": "2020-03-10",
+  "certificaciones": ["Liderazgo", "Six Sigma Green Belt", "ISO 9001"],
+  "habilidades": ["Gestión de equipos", "Lean Manufacturing", "Resolución de problemas"]
+}
+
+### Crear Operador 3
+POST http://localhost:3000/operadores
+Content-Type: application/json
+
+{
+  "codigo": "OP003",
+  "numeroEmpleado": "EMP-2024-003",
+  "nombre": "Carlos",
+  "apellidos": "Martínez Pérez",
+  "email": "carlos.martinez@empresa.com",
+  "telefono": "+34 600 345 678",
+  "estado": "ACTIVO",
+  "nivelHabilidad": "INTERMEDIO",
+  "departamento": "Mantenimiento",
+  "puesto": "Técnico de mantenimiento",
+  "fechaIngreso": "2023-06-01",
+  "certificaciones": ["Electricidad industrial", "Mecánica básica"],
+  "habilidades": ["Mantenimiento preventivo", "Diagnóstico de fallas", "Electricidad"]
+}
+
+### Crear Operador 4
+POST http://localhost:3000/operadores
+Content-Type: application/json
+
+{
+  "codigo": "OP004",
+  "numeroEmpleado": "EMP-2024-004",
+  "nombre": "Ana",
+  "apellidos": "Torres Gómez",
+  "email": "ana.torres@empresa.com",
+  "telefono": "+34 600 456 789",
+  "estado": "ACTIVO",
+  "nivelHabilidad": "BASICO",
+  "departamento": "Calidad",
+  "puesto": "Inspector de calidad",
+  "fechaIngreso": "2024-01-10",
+  "certificaciones": ["Metrología", "Control estadístico"],
+  "habilidades": ["Inspección visual", "Uso de instrumentos de medición", "Documentación"]
+}
+
+### Listar todos los operadores
+GET http://localhost:3000/operadores

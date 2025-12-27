@@ -1,0 +1,151 @@
+### Crear Proceso - Corte de Material
+POST http://localhost:3000/procesos
+Content-Type: application/json
+
+{
+  "codigo": "PROC-001",
+  "nombre": "Corte de material",
+  "descripcion": "Proceso de corte de materia prima según especificaciones",
+  "tipo": "MANUFACTURA",
+  "estado": "ACTIVO",
+  "version": "1.0",
+  "tiempoEstandarMinutos": 15.5,
+  "tiempoSetupMinutos": 10,
+  "instrucciones": "1. Verificar dimensiones en plano\n2. Ajustar máquina\n3. Realizar corte\n4. Verificar medidas",
+  "requisitosCalidad": "Tolerancia ±0.5mm, sin rebabas",
+  "parametros": {
+    "velocidad": "1500 rpm",
+    "avance": "100 mm/min",
+    "profundidad": "5 mm"
+  },
+  "recursos": ["Sierra circular", "Calibrador", "Guantes de seguridad"],
+  "habilidadesRequeridas": ["Lectura de planos", "Uso de máquinas de corte"],
+  "secuencia": 1,
+  "puntosCriticos": ["Verificación de medidas", "Control de rebabas"],
+  "riesgos": ["Cortes", "Proyección de virutas"],
+  "eficienciaEsperada": 85,
+  "costoEstandar": 12.50,
+  "activo": true
+}
+
+### Crear Proceso - Mecanizado CNC
+POST http://localhost:3000/procesos
+Content-Type: application/json
+
+{
+  "codigo": "PROC-002",
+  "nombre": "Mecanizado CNC",
+  "descripcion": "Proceso de mecanizado de precisión con control numérico",
+  "tipo": "MANUFACTURA",
+  "estado": "ACTIVO",
+  "version": "2.1",
+  "tiempoEstandarMinutos": 45,
+  "tiempoSetupMinutos": 30,
+  "instrucciones": "1. Cargar programa CNC\n2. Montar pieza en fixture\n3. Verificar cero pieza\n4. Ejecutar programa\n5. Inspeccionar",
+  "requisitosCalidad": "Tolerancia ±0.01mm, Ra 1.6",
+  "parametros": {
+    "velocidadHusillo": "3000 rpm",
+    "avance": "200 mm/min",
+    "refrigerante": "Soluble 5%"
+  },
+  "recursos": ["Centro de mecanizado CNC", "Herramientas de corte", "Micrómetro", "Rugosímetro"],
+  "habilidadesRequeridas": ["Programación CNC", "Metrología", "Control numérico"],
+  "secuencia": 2,
+  "documentos": [
+    {
+      "nombre": "Manual de operación CNC",
+      "tipo": "PDF",
+      "url": "/docs/cnc-manual.pdf"
+    }
+  ],
+  "puntosCriticos": ["Cero pieza", "Primera pieza", "Control dimensional"],
+  "riesgos": ["Rotura de herramienta", "Colisión de husillo"],
+  "eficienciaEsperada": 92,
+  "costoEstandar": 85.00,
+  "activo": true
+}
+
+### Crear Proceso - Ensamble
+POST http://localhost:3000/procesos
+Content-Type: application/json
+
+{
+  "codigo": "PROC-003",
+  "nombre": "Ensamble de subconjunto",
+  "descripcion": "Proceso de ensamble de componentes en subconjunto",
+  "tipo": "ENSAMBLE",
+  "estado": "ACTIVO",
+  "version": "1.5",
+  "tiempoEstandarMinutos": 25,
+  "tiempoSetupMinutos": 5,
+  "instrucciones": "1. Verificar componentes\n2. Limpiar superficies\n3. Aplicar adhesivo\n4. Ensamblar componentes\n5. Verificar ajuste",
+  "requisitosCalidad": "Sin juego, torque según especificación",
+  "parametros": {
+    "torque": "25 Nm",
+    "adhesivo": "Loctite 243"
+  },
+  "recursos": ["Torquímetro", "Adhesivo", "Estación de ensamble"],
+  "habilidadesRequeridas": ["Ensamble de precisión", "Uso de torquímetro"],
+  "secuencia": 3,
+  "puntosCriticos": ["Limpieza de superficies", "Aplicación de torque correcto"],
+  "riesgos": ["Daño de roscas", "Contaminación"],
+  "eficienciaEsperada": 88,
+  "costoEstandar": 18.75,
+  "activo": true
+}
+
+### Crear Proceso - Inspección de Calidad
+POST http://localhost:3000/procesos
+Content-Type: application/json
+
+{
+  "codigo": "PROC-004",
+  "nombre": "Inspección dimensional",
+  "descripcion": "Proceso de inspección y control dimensional",
+  "tipo": "INSPECCION",
+  "estado": "ACTIVO",
+  "version": "1.0",
+  "tiempoEstandarMinutos": 10,
+  "tiempoSetupMinutos": 2,
+  "instrucciones": "1. Revisar plan de control\n2. Medir dimensiones críticas\n3. Registrar mediciones\n4. Validar tolerancias\n5. Aprobar/Rechazar",
+  "requisitosCalidad": "100% de dimensiones dentro de tolerancia",
+  "parametros": {
+    "muestreo": "n=5 cada 2 horas"
+  },
+  "recursos": ["Calibrador digital", "Micrómetro", "Hoja de inspección"],
+  "habilidadesRequeridas": ["Metrología", "Interpretación de planos", "SPC"],
+  "secuencia": 4,
+  "puntosCriticos": ["Calibración de instrumentos", "Registro de datos"],
+  "riesgos": ["Error de medición", "Falso positivo"],
+  "eficienciaEsperada": 95,
+  "costoEstandar": 8.50,
+  "activo": true
+}
+
+### Crear Proceso - Empaque
+POST http://localhost:3000/procesos
+Content-Type: application/json
+
+{
+  "codigo": "PROC-005",
+  "nombre": "Empaque final",
+  "descripcion": "Proceso de empaque y preparación para envío",
+  "tipo": "EMPAQUE",
+  "estado": "ACTIVO",
+  "version": "1.0",
+  "tiempoEstandarMinutos": 8,
+  "tiempoSetupMinutos": 3,
+  "instrucciones": "1. Verificar producto\n2. Colocar en empaque primario\n3. Etiquetar\n4. Colocar en caja\n5. Sellar",
+  "requisitosCalidad": "Producto protegido, etiquetado correcto",
+  "recursos": ["Cajas", "Etiquetas", "Selladora", "Material de relleno"],
+  "habilidadesRequeridas": ["Empaque básico"],
+  "secuencia": 5,
+  "puntosCriticos": ["Etiquetado correcto", "Sellado hermético"],
+  "riesgos": ["Daño de producto", "Etiquetado incorrecto"],
+  "eficienciaEsperada": 90,
+  "costoEstandar": 5.25,
+  "activo": true
+}
+
+### Listar todos los procesos
+GET http://localhost:3000/procesos
