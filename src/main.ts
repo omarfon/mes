@@ -2,32 +2,23 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Configuración de CORS - Permitir conexiones desde el frontend
-  const allowedOrigins = [
-    'http://localhost:4200',  // Frontend Angular en desarrollo
-    'http://localhost:4201',  // Puerto alternativo
-    'http://127.0.0.1:4200',  // Localhost alternativo
-  ];
+  // Filtro global de excepciones
+  app.useGlobalFilters(new AllExceptionsFilter());
 
+  // Prefijo global para todas las rutas
+  app.setGlobalPrefix('api');
+
+  // Configuración de CORS - Permitir conexiones desde el frontend
   app.enableCors({
-    origin: (origin, callback) => {
-      // Permitir requests sin origin (como Postman, Thunder Client, etc)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        console.warn(`⚠️  Origen bloqueado por CORS: ${origin}`);
-        callback(null, false);
-      }
-    },
+    origin: true, // Permitir todos los orígenes en desarrollo
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
     maxAge: 3600,
   });
@@ -43,7 +34,13 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+      errorHttpStatusCode: 422,
+      stopAtFirstError: false,
     })
   )
 

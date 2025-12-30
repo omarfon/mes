@@ -173,17 +173,52 @@ export class MotivosParadaService {
   /**
    * Soft delete de un motivo de parada
    */
-  async remove(id: string): Promise<void> {
+  async remove(id: string) {
     const motivo = await this.findOne(id);
-    await this.motivosRepo.softDelete(motivo.id);
+    
+    const result = await this.motivosRepo.softDelete(motivo.id);
+    
+    if (result.affected === 0) {
+      throw new NotFoundException(`El motivo de parada con id ${id} no pudo ser eliminado`);
+    }
+    
+    return {
+      success: true,
+      message: `Motivo de parada "${motivo.nombre}" (${motivo.codigo}) eliminado exitosamente`,
+      deletedMotivo: {
+        id: motivo.id,
+        codigo: motivo.codigo,
+        nombre: motivo.nombre,
+      },
+    };
   }
 
   /**
    * Restaurar un motivo de parada eliminado
    */
   async restore(id: string): Promise<MotivoParada> {
+    // Verificar que existe (incluso si está eliminado)
+    const motivo = await this.motivosRepo.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!motivo) {
+      throw new NotFoundException(`Motivo de parada con id ${id} no encontrado`);
+    }
+
+    if (!motivo.deletedAt) {
+      throw new ConflictException(`El motivo de parada ${motivo.codigo} no está eliminado`);
+    }
+
     await this.motivosRepo.restore(id);
-    return this.findOne(id);
+    
+    // Activar automáticamente al restaurar
+    motivo.activo = true;
+    motivo.deletedAt = undefined;
+    await this.motivosRepo.save(motivo);
+    
+    return motivo;
   }
 
   /**

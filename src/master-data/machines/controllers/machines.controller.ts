@@ -6,7 +6,7 @@ import { FilterMachinesDto } from '../dtos/filter-machine.dto';
 import { UpdateMachineDto } from '../dtos/update-machine.dto';
 
 
-@Controller('machines')
+@Controller('master-data/machines')
 export class MachinesController {
   constructor(private readonly machinesService: MachinesService) {}
 
@@ -63,13 +63,12 @@ export class MachinesController {
   }
 
   /**
-   * Eliminar máquina (podrías implementar soft delete en el service)
+   * Eliminar máquina (soft delete)
    * DELETE /machines/:id
    */
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    await this.machinesService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.machinesService.remove(id);
   }
 }
 

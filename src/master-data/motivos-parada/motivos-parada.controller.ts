@@ -18,7 +18,7 @@ import { FilterMotivoParadaDto } from './dto/filter-motivo-parada.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Motivos de Parada')
-@Controller('motivos-parada')
+@Controller('master-data/motivos-parada')
 export class MotivosParadaController {
   constructor(private readonly motivosParadaService: MotivosParadaService) {}
 
@@ -133,9 +133,8 @@ export class MotivosParadaController {
    * DELETE /motivos-parada/:id
    */
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un motivo de parada (soft delete)' })
-  @ApiResponse({ status: 204, description: 'Motivo de parada eliminado' })
+  @ApiResponse({ status: 200, description: 'Motivo de parada eliminado' })
   @ApiResponse({ status: 404, description: 'Motivo de parada no encontrado' })
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.motivosParadaService.remove(id);

@@ -1,0 +1,148 @@
+### Variables
+@baseUrl = http://localhost:3000/api
+@motivoId = {{createMotivo.response.body.id}}
+
+### 1. Listar Todos los Motivos de Parada - GET (sin filtros)
+GET {{baseUrl}}/motivos-parada
+Content-Type: application/json
+
+### 2. Listar con Paginación - GET
+GET {{baseUrl}}/motivos-parada?page=1&limit=10
+Content-Type: application/json
+
+### 3. Buscar por Texto (código o nombre) - GET
+GET {{baseUrl}}/motivos-parada?search=material
+Content-Type: application/json
+
+### 4. Filtrar por Categoría - GET
+GET {{baseUrl}}/motivos-parada?categoria=MATERIALES
+Content-Type: application/json
+
+### 5. Filtrar por Tipo - GET
+GET {{baseUrl}}/motivos-parada?tipo=MEDIA
+Content-Type: application/json
+
+### 6. Filtrar por Estado Activo - GET
+GET {{baseUrl}}/motivos-parada?activo=true
+Content-Type: application/json
+
+### 7. Filtrar por Impacto OEE - GET
+GET {{baseUrl}}/motivos-parada?impactaOEE=true
+Content-Type: application/json
+
+### 8. Filtrar por Departamento - GET
+GET {{baseUrl}}/motivos-parada?departamentoResponsable=Logística
+Content-Type: application/json
+
+### 9. Filtros Combinados - GET
+GET {{baseUrl}}/motivos-parada?categoria=NO_PLANIFICADA&tipo=LARGA&activo=true&impactaOEE=true&page=1&limit=5
+Content-Type: application/json
+
+### 10. Búsqueda + Filtros - GET
+GET {{baseUrl}}/motivos-parada?search=falla&categoria=NO_PLANIFICADA&activo=true
+Content-Type: application/json
+
+### 11. Obtener Motivo por ID - GET
+GET {{baseUrl}}/motivos-parada/{{motivoId}}
+Content-Type: application/json
+
+### 12. Obtener Motivo por Código - GET
+GET {{baseUrl}}/motivos-parada/codigo/MP001
+Content-Type: application/json
+
+### 13. Obtener Motivos por Categoría (endpoint específico) - GET
+GET {{baseUrl}}/motivos-parada/categoria/MATERIALES
+Content-Type: application/json
+
+### 14. Obtener Estadísticas por Categoría - GET
+GET {{baseUrl}}/motivos-parada/estadisticas/por-categoria
+Content-Type: application/json
+
+### 15. Crear Motivo de Parada - POST
+# @name createMotivo
+POST {{baseUrl}}/motivos-parada
+Content-Type: application/json
+
+{
+  "codigo": "MP001",
+  "nombre": "Falta de material",
+  "descripcion": "Parada por falta de materia prima o componentes",
+  "categoria": "MATERIALES",
+  "tipo": "MEDIA",
+  "requiereAprobacion": false,
+  "requiereComentario": true,
+  "requiereEvidencia": false,
+  "color": "#e74c3c",
+  "icono": "box",
+  "tiempoEstandardMinutos": 30,
+  "prioridad": 2,
+  "impactaOEE": true,
+  "departamentoResponsable": "Logística",
+  "accionesCorrectivas": [
+    "Verificar stock",
+    "Contactar proveedor",
+    "Revisar planificación"
+  ],
+  "activo": true
+}
+
+### 16. Actualizar Motivo - PATCH
+PATCH {{baseUrl}}/motivos-parada/{{motivoId}}
+Content-Type: application/json
+
+{
+  "nombre": "Falta de material actualizado",
+  "prioridad": 1,
+  "color": "#c0392b"
+}
+
+### 17. Activar/Desactivar Motivo - PATCH
+PATCH {{baseUrl}}/motivos-parada/{{motivoId}}/toggle-active
+Content-Type: application/json
+
+### 18. Eliminar Motivo (Soft Delete) - DELETE
+DELETE {{baseUrl}}/motivos-parada/{{motivoId}}
+Content-Type: application/json
+
+### 19. Restaurar Motivo Eliminado - PATCH
+PATCH {{baseUrl}}/motivos-parada/{{motivoId}}/restore
+Content-Type: application/json
+
+### ============================================
+### EJEMPLOS DE FILTROS PARA ANGULAR
+### ============================================
+
+### Todos los motivos activos que impactan OEE
+GET {{baseUrl}}/motivos-parada?activo=true&impactaOEE=true
+Content-Type: application/json
+
+### Motivos de mantenimiento (planificado y no planificado)
+GET {{baseUrl}}/motivos-parada?categoria=MANTENIMIENTO
+Content-Type: application/json
+
+### Paradas largas no planificadas
+GET {{baseUrl}}/motivos-parada?categoria=NO_PLANIFICADA&tipo=LARGA
+Content-Type: application/json
+
+### Motivos de calidad activos
+GET {{baseUrl}}/motivos-parada?categoria=CALIDAD&activo=true
+Content-Type: application/json
+
+### ============================================
+### CATEGORÍAS DISPONIBLES
+### ============================================
+# PLANIFICADA
+# NO_PLANIFICADA
+# MANTENIMIENTO
+# PRODUCCION
+# CALIDAD
+# MATERIALES
+# PERSONAL
+# OTROS
+
+### ============================================
+### TIPOS DISPONIBLES
+### ============================================
+# CORTA
+# MEDIA
+# LARGA

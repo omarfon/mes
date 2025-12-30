@@ -1,0 +1,158 @@
+### Variables
+@baseUrl = http://localhost:3000/api
+@turnoId = {{createTurno.response.body.id}}
+
+### 1. Crear Turno - POST
+# @name createTurno
+POST {{baseUrl}}/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T1",
+  "nombre": "Turno Mañana",
+  "horaInicio": "06:00",
+  "horaFin": "14:00",
+  "duracionHoras": 8,
+  "descripcion": "Turno de mañana - Producción general",
+  "activo": true,
+  "diasSemana": [1, 2, 3, 4, 5],
+  "color": "#3498db"
+}
+
+### 2. Obtener Todos los Turnos - GET (con paginación)
+GET {{baseUrl}}/turnos?page=1&limit=20
+Content-Type: application/json
+
+### 3. Obtener Turnos con Filtros - GET
+GET {{baseUrl}}/turnos?search=mañana&activo=true&page=1&limit=10
+Content-Type: application/json
+
+### 4. Obtener Turno por ID - GET
+GET {{baseUrl}}/turnos/{{turnoId}}
+Content-Type: application/json
+
+### 5. Obtener Turno por Código - GET
+GET {{baseUrl}}/turnos/codigo/T1
+Content-Type: application/json
+
+### 6. Actualizar Turno - PATCH
+PATCH {{baseUrl}}/turnos/{{turnoId}}
+Content-Type: application/json
+
+{
+  "nombre": "Turno Mañana Actualizado",
+  "descripcion": "Turno de mañana - Producción actualizada",
+  "color": "#2980b9"
+}
+
+### 7. Activar/Desactivar Turno - PATCH
+PATCH {{baseUrl}}/turnos/{{turnoId}}/toggle-active
+Content-Type: application/json
+
+### 8. Eliminar Turno (Soft Delete) - DELETE
+DELETE {{baseUrl}}/turnos/{{turnoId}}
+Content-Type: application/json
+
+### 9. Restaurar Turno Eliminado - PATCH
+PATCH {{baseUrl}}/turnos/{{turnoId}}/restore
+Content-Type: application/json
+
+### ============================================
+### EJEMPLOS ADICIONALES DE CREACIÓN
+### ============================================
+
+### Crear Turno Tarde
+POST {{baseUrl}}/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T2",
+  "nombre": "Turno Tarde",
+  "horaInicio": "14:00",
+  "horaFin": "22:00",
+  "duracionHoras": 8,
+  "descripcion": "Turno de tarde - Producción general",
+  "activo": true,
+  "diasSemana": [1, 2, 3, 4, 5],
+  "color": "#e67e22"
+}
+
+### Crear Turno Noche
+POST {{baseUrl}}/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T3",
+  "nombre": "Turno Noche",
+  "horaInicio": "22:00",
+  "horaFin": "06:00",
+  "duracionHoras": 8,
+  "descripcion": "Turno nocturno - Producción especial",
+  "activo": true,
+  "diasSemana": [1, 2, 3, 4, 5],
+  "color": "#9b59b6"
+}
+
+### Crear Turno Fin de Semana
+POST {{baseUrl}}/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T4",
+  "nombre": "Turno Fin de Semana",
+  "horaInicio": "08:00",
+  "horaFin": "16:00",
+  "duracionHoras": 8,
+  "descripcion": "Turno de fin de semana",
+  "activo": true,
+  "diasSemana": [6, 7],
+  "color": "#16a085"
+}
+
+### ============================================
+### PRUEBAS DE VALIDACIÓN (Deben fallar)
+### ============================================
+
+### Error: Código duplicado
+POST {{baseUrl}}/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T1",
+  "nombre": "Turno Duplicado",
+  "horaInicio": "06:00",
+  "horaFin": "14:00"
+}
+
+### Error: Formato de hora inválido
+POST {{baseUrl}}/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T5",
+  "nombre": "Turno Error",
+  "horaInicio": "25:00",
+  "horaFin": "14:00"
+}
+
+### Error: Color inválido
+POST {{baseUrl}}/turnos
+Content-Type: application/json
+
+{
+  "codigo": "T6",
+  "nombre": "Turno Color Error",
+  "horaInicio": "06:00",
+  "horaFin": "14:00",
+  "color": "azul"
+}
+
+### Error: Campos faltantes (código obligatorio)
+POST {{baseUrl}}/turnos
+Content-Type: application/json
+
+{
+  "nombre": "Turno Sin Código",
+  "horaInicio": "06:00",
+  "horaFin": "14:00"
+}

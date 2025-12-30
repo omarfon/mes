@@ -23,24 +23,23 @@ export class MachinesService {
   ) { }
 
   async create(dto: CreateMachineDto) {
-    try {
-      // Validar unicidad del código (aunque la DB lo valida, es mejor hacerlo explícito)
-      const existing = await this.machineRepository.findOne({
-        where: { code: dto.code },
-        withDeleted: true, // Chequear incluso si fue borrado soft
-      });
+    // Validar unicidad del código (aunque la DB lo valida, es mejor hacerlo explícito)
+    const existing = await this.machineRepository.findOne({
+      where: { code: dto.code },
+      withDeleted: true, // Chequear incluso si fue borrado soft
+    });
 
-      if (existing) {
-        throw new BadRequestException(
-          `Machine with code "${dto.code}" already exists`,
-        );
-      }
-
-      const machine = this.machineRepository.create(dto);
-      return await this.machineRepository.save(machine);
-    } catch (error) {
-      this.handleDBExceptions(error);
+    if (existing) {
+      throw new BadRequestException(
+        `Machine with code "${dto.code}" already exists`,
+      );
     }
+
+    const machine = this.machineRepository.create(dto);
+    const saved = await this.machineRepository.save(machine);
+    
+    // Retornar la entidad guardada sin relaciones cargadas
+    return saved;
   }
 
   async findAll(filter: FilterMachinesDto) {
@@ -139,9 +138,32 @@ export class MachinesService {
     return await this.machineRepository.save(machine);
   }
 
-  async remove(id: string): Promise<void> {
-    const machine = await this.findOne(id);
-    await this.machineRepository.softRemove(machine);
+  async remove(id: string) {
+    // Verificar que la máquina existe y NO está ya eliminada
+    const machine = await this.machineRepository.findOne({
+      where: { id },
+    });
+
+    if (!machine) {
+      throw new NotFoundException(`Machine with id ${id} not found or already deleted`);
+    }
+    
+    // Realizar soft delete
+    const result = await this.machineRepository.softDelete(id);
+    
+    if (result.affected === 0) {
+      throw new NotFoundException(`Machine with id ${id} could not be deleted`);
+    }
+    
+    return {
+      success: true,
+      message: `Machine "${machine.name}" (${machine.code}) has been deleted successfully`,
+      deletedMachine: {
+        id: machine.id,
+        code: machine.code,
+        name: machine.name,
+      },
+    };
   }
 
   private handleDBExceptions(error: any) {
