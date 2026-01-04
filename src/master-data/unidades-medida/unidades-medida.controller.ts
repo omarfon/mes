@@ -18,7 +18,7 @@ import { FilterUnidadMedidaDto } from './dto/filter-unidad-medida.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('Unidades de Medida')
-@Controller('unidades-medida')
+@Controller('master-data/unidades-medida')
 export class UnidadesMedidaController {
   constructor(private readonly unidadesMedidaService: UnidadesMedidaService) {}
 

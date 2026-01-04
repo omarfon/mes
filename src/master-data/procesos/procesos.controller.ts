@@ -18,7 +18,7 @@ import { FilterProcesoDto } from './dto/filter-proceso.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('Procesos')
-@Controller('procesos')
+@Controller('master-data/procesos')
 export class ProcesosController {
   constructor(private readonly procesosService: ProcesosService) {}
 

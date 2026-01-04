@@ -14,9 +14,9 @@ import { Roles } from 'src/auth/decorators/roles.decorators';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from 'src/master-data/users/entities/user.entity';
-import { AddDefectDto } from '../dto/add-deffect.dto';
-import { CreateInspectionDto } from '../dto/create-inspection.dto';
-import { FilterInspectionsDto } from '../dto/filter-inspection.dto';
+import { AddDefectDto } from '../inspections/dto/add-defect.dto';
+import { CreateInspectionDto } from '../inspections/dto/create-inspection.dto';
+import { FilterInspectionsDto } from '../inspections/dto/filter-inspection.dto';
 import { InspectionStatus } from '../entities/inspection.entity';
 import { InspectionsService } from './inspection.service';
 

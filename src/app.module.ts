@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './master-data/users/users.module';
 import { MasterDataModule } from './master-data/master-data.module';
+import { ProductionModule } from './production/production.module';
 import { ProductionOrdersModule } from './production-orders/production-orders.module';
 import { DispatchingModule } from './dispatching/dispatching.module';
 import { DataCollectionModule } from './data-collection/data-collection.module';
@@ -18,6 +19,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ActivityLogModule } from './activity-log/activity-log.module';
+import { AssetsStatusModule } from './assets-status/assets-status.module';
 import databaseConfig from './config/database-config';
 
 @Module({
@@ -38,13 +40,14 @@ import databaseConfig from './config/database-config';
           username: config.get<string>('DB_USER'),
           password: config.get<string>('DB_PASSWORD'),
           autoLoadEntities: true,
-          synchronize: config.get<string>('DB_SYNCHRONIZE') === 'true',
+          synchronize: false, // Deshabilitado temporalmente para evitar bucle de schema sync
           logging: config.get<string>('DB_LOGGING') === 'true',
         }),
     }), 
     AuthModule, 
         UsersModule, 
-        MasterDataModule, 
+        MasterDataModule,
+        ProductionModule,
         ProductionOrdersModule, 
         DispatchingModule, 
         DataCollectionModule, 
@@ -53,7 +56,7 @@ import databaseConfig from './config/database-config';
         TraceabilityModule, 
         ReportsModule, 
         IntegrationModule, 
-        IotIngestionModule, DashboardModule, NotificationsModule, ActivityLogModule],
+        IotIngestionModule, DashboardModule, NotificationsModule, ActivityLogModule, AssetsStatusModule],
   controllers: [AppController],
   providers: [AppService],
 })

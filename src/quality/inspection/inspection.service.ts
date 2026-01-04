@@ -12,9 +12,9 @@ import {
 import { TraceNode } from '../../traceability/entities/trace-node.entity';
 import { Defect } from '../entities/defect.entity';
 import { InspectionDefect } from '../entities/inspection-defect.entity';
-import { AddDefectDto } from '../dto/add-deffect.dto';
-import { CreateInspectionDto } from '../dto/create-inspection.dto';
-import { FilterInspectionsDto } from '../dto/filter-inspection.dto';
+import { AddDefectDto } from '../inspections/dto/add-defect.dto';
+import { CreateInspectionDto } from '../inspections/dto/create-inspection.dto';
+import { FilterInspectionsDto } from '../inspections/dto/filter-inspection.dto';
 
 
 

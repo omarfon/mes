@@ -17,7 +17,7 @@ import { UpdateShiftDto } from './dto/update-schift.dto';
 import { ShiftsService } from './schift.service';
 
 
-@Controller('shifts')
+@Controller('master-data/shifts')
 export class ShiftsController {
   constructor(private readonly shiftsService: ShiftsService) {}
 
