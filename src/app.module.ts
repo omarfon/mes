@@ -20,6 +20,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ActivityLogModule } from './activity-log/activity-log.module';
 import { AssetsStatusModule } from './assets-status/assets-status.module';
+import { MaintenanceModule } from './maintenance/maintenance.module';
 import databaseConfig from './config/database-config';
 
 @Module({
@@ -53,6 +54,7 @@ import databaseConfig from './config/database-config';
         DataCollectionModule, 
         MonitoringModule, 
         QualityModule, 
+        MaintenanceModule,
         TraceabilityModule, 
         ReportsModule, 
         IntegrationModule, 

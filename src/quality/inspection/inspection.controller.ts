@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Post,
   Patch,
+  Delete,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { UserRole } from 'src/master-data/users/entities/user.entity';
 import { AddDefectDto } from '../inspections/dto/add-defect.dto';
 import { CreateInspectionDto } from '../inspections/dto/create-inspection.dto';
 import { FilterInspectionsDto } from '../inspections/dto/filter-inspection.dto';
+import { UpdateInspectionDto } from '../inspections/dto/update-inspection.dto';
 import { InspectionStatus } from '../entities/inspection.entity';
 import { InspectionsService } from './inspection.service';
 
@@ -53,6 +55,23 @@ export class InspectionsController {
     @Param('status') status: InspectionStatus,
   ) {
     return this.service.updateStatus(id, status);
+  }
+
+  @Patch('inspections/:id')
+  @Roles(UserRole.SUPERVISOR, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Actualizar campos de una inspección' })
+  update(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateInspectionDto,
+  ) {
+    return this.service.updateInspection(id, dto);
+  }
+
+  @Delete('inspections/:id')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Eliminar una inspección' })
+  remove(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.service.remove(id);
   }
 
   @Get('inspections')

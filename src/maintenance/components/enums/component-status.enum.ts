@@ -1,0 +1,6 @@
+export enum ComponentStatus {
+  OPERATIONAL = 'OPERATIONAL',
+  DEGRADED = 'DEGRADED',
+  FAILED = 'FAILED',
+  REPLACED = 'REPLACED',
+}

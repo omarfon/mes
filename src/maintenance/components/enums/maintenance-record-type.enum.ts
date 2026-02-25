@@ -1,0 +1,6 @@
+export enum MaintenanceRecordType {
+  INSPECTION = 'INSPECTION',
+  REPAIR = 'REPAIR',
+  REPLACEMENT = 'REPLACEMENT',
+  LUBRICATION = 'LUBRICATION',
+}

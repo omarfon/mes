@@ -14,6 +14,7 @@ import { Defect } from '../entities/defect.entity';
 import { InspectionDefect } from '../entities/inspection-defect.entity';
 import { AddDefectDto } from '../inspections/dto/add-defect.dto';
 import { CreateInspectionDto } from '../inspections/dto/create-inspection.dto';
+import { UpdateInspectionDto } from '../inspections/dto/update-inspection.dto';
 import { FilterInspectionsDto } from '../inspections/dto/filter-inspection.dto';
 
 
@@ -86,6 +87,21 @@ export class InspectionsService {
 
     insp.status = status;
     return this.inspectionRepo.save(insp);
+  }
+
+  async updateInspection(id: string, dto: UpdateInspectionDto) {
+    const insp = await this.inspectionRepo.findOne({ where: { id } });
+    if (!insp) throw new NotFoundException('Inspection not found');
+
+    Object.assign(insp, dto);
+    return this.inspectionRepo.save(insp);
+  }
+
+  async remove(id: string) {
+    const insp = await this.inspectionRepo.findOne({ where: { id } });
+    if (!insp) throw new NotFoundException('Inspection not found');
+
+    return this.inspectionRepo.remove(insp);
   }
 
   async findAll(filter: FilterInspectionsDto) {
