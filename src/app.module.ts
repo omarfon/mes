@@ -21,6 +21,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { ActivityLogModule } from './activity-log/activity-log.module';
 import { AssetsStatusModule } from './assets-status/assets-status.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
+import { RulesEngineModule } from './rules-engine/rules-engine.module';
 import databaseConfig from './config/database-config';
 
 @Module({
@@ -41,7 +42,7 @@ import databaseConfig from './config/database-config';
           username: config.get<string>('DB_USER'),
           password: config.get<string>('DB_PASSWORD'),
           autoLoadEntities: true,
-          synchronize: false, // Deshabilitado temporalmente para evitar bucle de schema sync
+          synchronize: false, // Deshabilitado para evitar errores de schema sync
           logging: config.get<string>('DB_LOGGING') === 'true',
         }),
     }), 
@@ -58,7 +59,13 @@ import databaseConfig from './config/database-config';
         TraceabilityModule, 
         ReportsModule, 
         IntegrationModule, 
-        IotIngestionModule, DashboardModule, NotificationsModule, ActivityLogModule, AssetsStatusModule],
+        IotIngestionModule, 
+        DashboardModule, 
+        NotificationsModule, 
+        ActivityLogModule, 
+        AssetsStatusModule,
+        RulesEngineModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

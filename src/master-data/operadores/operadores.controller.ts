@@ -18,7 +18,7 @@ import { FilterOperadorDto } from './dto/filter-operador.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('Operadores')
-@Controller('operadores')
+@Controller('master-data/operators')
 export class OperadoresController {
   constructor(private readonly operadoresService: OperadoresService) {}
 

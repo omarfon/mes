@@ -17,6 +17,20 @@ import { Machine } from '../entities/machines.entity';
 export class MachinesService {
   private readonly logger = new Logger(MachinesService.name);
 
+  private normalizeMachine(machine: Machine) {
+    return {
+      ...machine,
+      description: machine.description ?? '',
+      type: machine.type ?? '',
+      model: machine.model ?? '',
+      serialNumber: machine.serialNumber ?? '',
+      area: machine.area ?? '',
+      location: machine.location ?? '',
+      nominalCapacity: machine.nominalCapacity ?? 0,
+      workCenterId: machine.workCenterId ?? '',
+    };
+  }
+
   constructor(
     @InjectRepository(Machine)
     private readonly machineRepository: Repository<Machine>,
@@ -39,7 +53,7 @@ export class MachinesService {
     const saved = await this.machineRepository.save(machine);
     
     // Retornar la entidad guardada sin relaciones cargadas
-    return saved;
+    return this.normalizeMachine(saved);
   }
 
   async findAll(filter: FilterMachinesDto) {
@@ -91,8 +105,10 @@ export class MachinesService {
       relations: ['workCenter'], // Cargar relación si es necesario mostrar info del centro
     });
 
+    const normalizedData = data.map((machine) => this.normalizeMachine(machine));
+
     return {
-      data,
+      data: normalizedData,
       total,
       page,
       limit,
@@ -110,7 +126,7 @@ export class MachinesService {
       throw new NotFoundException(`Machine with id ${id} not found`);
     }
 
-    return machine;
+    return this.normalizeMachine(machine);
   }
 
   async update(id: string, dto: UpdateMachineDto) {
@@ -120,7 +136,8 @@ export class MachinesService {
     this.machineRepository.merge(machine, dto);
 
     try {
-      return await this.machineRepository.save(machine);
+      const saved = await this.machineRepository.save(machine);
+      return this.normalizeMachine(saved);
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -135,7 +152,8 @@ export class MachinesService {
     }
 
     machine.status = status as MachineStatus;
-    return await this.machineRepository.save(machine);
+    const saved = await this.machineRepository.save(machine);
+    return this.normalizeMachine(saved);
   }
 
   async remove(id: string) {

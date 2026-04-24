@@ -16,8 +16,7 @@ import { FilterWorkCentersDto } from './dto/filter-work-center.dto';
 import { UpdateWorkCenterDto } from './dto/update-work-center.dto';
 import { WorkCentersService } from './work-centers.service';
 
-
-@Controller('work-centers')
+@Controller('master-data/work-centers')
 export class WorkCentersController {
   constructor(private readonly workCentersService: WorkCentersService) {}
 
@@ -47,9 +46,9 @@ export class WorkCentersController {
   @Patch(':id/active')
   async toggleActive(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body('isActive') isActive: boolean,
+    @Body('active') active: boolean,
   ) {
-    return this.workCentersService.toggleActive(id, isActive);
+    return this.workCentersService.toggleActive(id, active);
   }
 
   @Delete(':id')

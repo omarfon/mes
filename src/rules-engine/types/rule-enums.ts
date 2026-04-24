@@ -1,0 +1,165 @@
+/**
+ * Tipo de evento que dispara la regla
+ */
+export enum RuleEventType {
+  // Eventos de Orden de Producción
+  ORDER_CREATED = 'ORDER_CREATED',
+  ORDER_STARTED = 'ORDER_STARTED',
+  ORDER_PAUSED = 'ORDER_PAUSED',
+  ORDER_RESUMED = 'ORDER_RESUMED',
+  ORDER_COMPLETED = 'ORDER_COMPLETED',
+  ORDER_CANCELLED = 'ORDER_CANCELLED',
+  
+  // Eventos de Calidad
+  INSPECTION_CREATED = 'INSPECTION_CREATED',
+  INSPECTION_COMPLETED = 'INSPECTION_COMPLETED',
+  INSPECTION_FAILED = 'INSPECTION_FAILED',
+  DEFECT_REGISTERED = 'DEFECT_REGISTERED',
+  DEFECT_RATE_EXCEEDED = 'DEFECT_RATE_EXCEEDED',
+  
+  // Eventos de Máquina/Paro
+  MACHINE_STOPPED = 'MACHINE_STOPPED',
+  MACHINE_RUNNING = 'MACHINE_RUNNING',
+  DOWNTIME_THRESHOLD_EXCEEDED = 'DOWNTIME_THRESHOLD_EXCEEDED',
+  
+  // Eventos de Inventario/Lote
+  LOT_CREATED = 'LOT_CREATED',
+  LOT_CONSUMED = 'LOT_CONSUMED',
+  LOT_BLOCKED = 'LOT_BLOCKED',
+  STOCK_BELOW_MIN = 'STOCK_BELOW_MIN',
+  
+  // Eventos de Mantenimiento
+  MAINTENANCE_DUE = 'MAINTENANCE_DUE',
+  MAINTENANCE_COMPLETED = 'MAINTENANCE_COMPLETED',
+  
+  // Eventos Programados
+  SCHEDULED_CHECK = 'SCHEDULED_CHECK',
+  TIME_BASED_TRIGGER = 'TIME_BASED_TRIGGER',
+}
+
+/**
+ * Tipo de condición para evaluar
+ */
+export enum RuleConditionType {
+  // Comparaciones de valores
+  FIELD_EQUALS = 'FIELD_EQUALS',
+  FIELD_NOT_EQUALS = 'FIELD_NOT_EQUALS',
+  FIELD_GREATER_THAN = 'FIELD_GREATER_THAN',
+  FIELD_LESS_THAN = 'FIELD_LESS_THAN',
+  FIELD_GREATER_OR_EQUAL = 'FIELD_GREATER_OR_EQUAL',
+  FIELD_LESS_OR_EQUAL = 'FIELD_LESS_OR_EQUAL',
+  FIELD_IN = 'FIELD_IN',
+  FIELD_NOT_IN = 'FIELD_NOT_IN',
+  FIELD_CONTAINS = 'FIELD_CONTAINS',
+  FIELD_IS_NULL = 'FIELD_IS_NULL',
+  FIELD_IS_NOT_NULL = 'FIELD_IS_NOT_NULL',
+  
+  // Condiciones de estado
+  HAS_PENDING_INSPECTIONS = 'HAS_PENDING_INSPECTIONS',
+  HAS_ACTIVE_ALERTS = 'HAS_ACTIVE_ALERTS',
+  IS_LOT_BLOCKED = 'IS_LOT_BLOCKED',
+  IS_MACHINE_AVAILABLE = 'IS_MACHINE_AVAILABLE',
+  
+  // Condiciones de tiempo
+  DURATION_EXCEEDED = 'DURATION_EXCEEDED',
+  WITHIN_TIME_RANGE = 'WITHIN_TIME_RANGE',
+  WEEKDAY_IS = 'WEEKDAY_IS',
+  
+  // Condiciones de porcentaje/ratio
+  PERCENTAGE_EXCEEDS = 'PERCENTAGE_EXCEEDS',
+  PERCENTAGE_BELOW = 'PERCENTAGE_BELOW',
+  RATIO_EXCEEDS = 'RATIO_EXCEEDS',
+  
+  // Condiciones custom/SQL
+  CUSTOM_QUERY = 'CUSTOM_QUERY',
+  CUSTOM_FUNCTION = 'CUSTOM_FUNCTION',
+}
+
+/**
+ * Operador lógico para combinar condiciones
+ */
+export enum LogicalOperator {
+  AND = 'AND',
+  OR = 'OR',
+  NOT = 'NOT',
+}
+
+/**
+ * Tipo de acción a ejecutar cuando se cumple la regla
+ */
+export enum RuleActionType {
+  // Acciones de bloqueo/control
+  BLOCK_ORDER = 'BLOCK_ORDER',
+  BLOCK_LOT = 'BLOCK_LOT',
+  BLOCK_MACHINE = 'BLOCK_MACHINE',
+  PREVENT_COMPLETION = 'PREVENT_COMPLETION',
+  REQUIRE_APPROVAL = 'REQUIRE_APPROVAL',
+  
+  // Acciones de creación
+  CREATE_ALERT = 'CREATE_ALERT',
+  CREATE_NOTIFICATION = 'CREATE_NOTIFICATION',
+  CREATE_WORK_ORDER = 'CREATE_WORK_ORDER',
+  CREATE_INSPECTION = 'CREATE_INSPECTION',
+  
+  // Acciones de actualización
+  UPDATE_ORDER_STATUS = 'UPDATE_ORDER_STATUS',
+  UPDATE_MACHINE_STATUS = 'UPDATE_MACHINE_STATUS',
+  UPDATE_LOT_STATUS = 'UPDATE_LOT_STATUS',
+  UPDATE_FIELD_VALUE = 'UPDATE_FIELD_VALUE',
+  
+  // Acciones de notificación
+  SEND_EMAIL = 'SEND_EMAIL',
+  SEND_SMS = 'SEND_SMS',
+  SEND_PUSH_NOTIFICATION = 'SEND_PUSH_NOTIFICATION',
+  
+  // Acciones de logging
+  LOG_EVENT = 'LOG_EVENT',
+  LOG_METRIC = 'LOG_METRIC',
+  
+  // Acciones custom
+  EXECUTE_WEBHOOK = 'EXECUTE_WEBHOOK',
+  EXECUTE_CUSTOM_FUNCTION = 'EXECUTE_CUSTOM_FUNCTION',
+}
+
+/**
+ * Prioridad de la regla
+ */
+export enum RulePriority {
+  CRITICAL = 'CRITICAL',
+  HIGH = 'HIGH',
+  MEDIUM = 'MEDIUM',
+  LOW = 'LOW',
+}
+
+/**
+ * Estado de la regla
+ */
+export enum RuleStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  DRAFT = 'DRAFT',
+  ARCHIVED = 'ARCHIVED',
+}
+
+/**
+ * Resultado de la ejecución de una regla
+ */
+export enum ExecutionResult {
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+  SKIPPED = 'SKIPPED',
+  ERROR = 'ERROR',
+}
+
+/**
+ * Ámbito de aplicación de la regla
+ */
+export enum RuleScope {
+  GLOBAL = 'GLOBAL',
+  PLANT = 'PLANT',
+  AREA = 'AREA',
+  WORK_CENTER = 'WORK_CENTER',
+  MACHINE = 'MACHINE',
+  PRODUCT = 'PRODUCT',
+  ORDER_TYPE = 'ORDER_TYPE',
+}
