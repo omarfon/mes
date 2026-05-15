@@ -16,7 +16,8 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
+    const normalizedEmail = loginDto.email?.trim().toLowerCase();
+    const user = await this.validateUser(normalizedEmail, loginDto.password);
     
     const payload = { 
       sub: user.id, 
@@ -44,7 +45,23 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!password || !user.passwordHash) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+
+    let passwordMatch = false;
+
+    try {
+      // Compatibilidad: si el hash no es bcrypt, compara texto plano para no romper cuentas heredadas.
+      if (user.passwordHash.startsWith('$2a$') || user.passwordHash.startsWith('$2b$') || user.passwordHash.startsWith('$2y$')) {
+        passwordMatch = await bcrypt.compare(password, user.passwordHash);
+      } else {
+        passwordMatch = password === user.passwordHash;
+      }
+    } catch {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+
     if (!passwordMatch) {
       throw new UnauthorizedException('Credenciales inválidas');
     }

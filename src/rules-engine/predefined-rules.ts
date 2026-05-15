@@ -11,8 +11,8 @@ import {
   LogicalOperator,
   RuleConditionType,
   RuleActionType,
-} from '../types/rule-enums';
-import { CreateRuleDto } from '../dto';
+} from './types/rule-enums';
+import { CreateRuleDto } from './dto';
 
 /**
  * Regla 1: No finalizar OP si hay inspección pendiente

@@ -15,7 +15,7 @@ import {
   RuleScope,
   LogicalOperator,
 } from '../types/rule-enums';
-import { ConditionGroup, ActionDefinition } from '../types/rule-types';
+import type { ConditionGroup, ActionDefinition } from '../types/rule-types';
 import { RuleExecution } from './rule-execution.entity';
 
 @Entity({ name: 'rules' })

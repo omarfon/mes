@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { RuleActionType } from '../types/rule-enums';
 import {
   RuleContext,
@@ -13,12 +13,12 @@ export class ActionExecutor {
   private readonly logger = new Logger(ActionExecutor.name);
 
   constructor(
-    @InjectRepository(Repository)
-    private readonly repository: Repository<any>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   /**
-   * Ejecuta una acción
+   * Ejecuta una acciÃ³n
    */
   async executeAction(
     action: ActionDefinition,
@@ -55,7 +55,7 @@ export class ActionExecutor {
           result.success = true;
           break;
 
-        // Acciones de creación
+        // Acciones de creaciÃ³n
         case RuleActionType.CREATE_ALERT:
           result.output = await this.createAlert(action, context);
           result.success = true;
@@ -73,7 +73,7 @@ export class ActionExecutor {
           result.success = true;
           break;
 
-        // Acciones de actualización
+        // Acciones de actualizaciÃ³n
         case RuleActionType.UPDATE_ORDER_STATUS:
           result.output = await this.updateOrderStatus(action, context);
           result.success = true;
@@ -91,7 +91,7 @@ export class ActionExecutor {
           result.success = true;
           break;
 
-        // Acciones de notificación
+        // Acciones de notificaciÃ³n
         case RuleActionType.SEND_EMAIL:
           result.output = await this.sendEmail(action, context);
           result.success = true;
@@ -133,7 +133,7 @@ export class ActionExecutor {
   }
 
   /**
-   * Ejecuta múltiples acciones en orden
+   * Ejecuta mÃºltiples acciones en orden
    */
   async executeActions(
     actions: ActionDefinition[],
@@ -141,7 +141,7 @@ export class ActionExecutor {
   ): Promise<ActionExecutionResult[]> {
     const results: ActionExecutionResult[] = [];
     
-    // Ordenar por order si está definido
+    // Ordenar por order si estÃ¡ definido
     const sortedActions = [...actions].sort((a, b) => {
       return (a.order ?? 999) - (b.order ?? 999);
     });
@@ -150,7 +150,7 @@ export class ActionExecutor {
       const result = await this.executeAction(action, context);
       results.push(result);
       
-      // Si falla y no debe continuar, detener ejecución
+      // Si falla y no debe continuar, detener ejecuciÃ³n
       if (!result.success && !action.continueOnError) {
         this.logger.warn(`Action ${action.type} failed, stopping execution`);
         break;
@@ -168,7 +168,7 @@ export class ActionExecutor {
   ): Promise<any> {
     const reason = action.params?.blockReason || 'Bloqueado por regla de negocio';
     
-    await this.repository.query(
+    await this.dataSource.query(
       `UPDATE production_orders 
        SET status = 'BLOCKED', 
            block_reason = $1,
@@ -187,7 +187,7 @@ export class ActionExecutor {
   ): Promise<any> {
     const reason = action.params?.blockReason || 'Bloqueado por regla de negocio';
     
-    await this.repository.query(
+    await this.dataSource.query(
       `UPDATE material_lots 
        SET status = 'BLOCKED', 
            block_reason = $1,
@@ -206,7 +206,7 @@ export class ActionExecutor {
   ): Promise<any> {
     const reason = action.params?.blockReason || 'Bloqueado por regla de negocio';
     
-    await this.repository.query(
+    await this.dataSource.query(
       `UPDATE machines 
        SET status = 'BLOCKED', 
            updated_at = NOW()
@@ -222,10 +222,10 @@ export class ActionExecutor {
     action: ActionDefinition,
     context: RuleContext,
   ): Promise<any> {
-    const reason = action.params?.blockReason || 'Completación prevenida por regla de negocio';
+    const reason = action.params?.blockReason || 'CompletaciÃ³n prevenida por regla de negocio';
     
-    // Esto podría ser implementado como un flag en la orden
-    await this.repository.query(
+    // Esto podrÃ­a ser implementado como un flag en la orden
+    await this.dataSource.query(
       `UPDATE production_orders 
        SET completion_prevented = true,
            prevention_reason = $1,
@@ -244,8 +244,8 @@ export class ActionExecutor {
   ): Promise<any> {
     const approvalType = action.params?.approvalType || 'QUALITY';
     
-    // Crear registro de aprobación pendiente
-    const result = await this.repository.query(
+    // Crear registro de aprobaciÃ³n pendiente
+    const result = await this.dataSource.query(
       `INSERT INTO approvals (
         entity_type, entity_id, approval_type, status, 
         required_by, created_at
@@ -266,7 +266,7 @@ export class ActionExecutor {
     const message = this.interpolate(action.params?.message || '', context);
     const severity = action.params?.severity || 'MEDIUM';
     
-    const result = await this.repository.query(
+    const result = await this.dataSource.query(
       `INSERT INTO alerts (
         entity_type, entity_id, title, message, severity,
         plant_code, area_code, created_at
@@ -291,12 +291,12 @@ export class ActionExecutor {
     action: ActionDefinition,
     context: RuleContext,
   ): Promise<any> {
-    const title = this.interpolate(action.params?.title || 'Notificación', context);
+    const title = this.interpolate(action.params?.title || 'NotificaciÃ³n', context);
     const message = this.interpolate(action.params?.message || '', context);
     const recipients = action.params?.recipients || [];
     
     for (const recipient of recipients) {
-      await this.repository.query(
+      await this.dataSource.query(
         `INSERT INTO notifications (
           user_id, title, message, entity_type, entity_id, created_at
         ) VALUES ($1, $2, $3, $4, $5, NOW())`,
@@ -316,11 +316,11 @@ export class ActionExecutor {
     const priority = action.params?.priority || 'MEDIUM';
     const assignTo = action.params?.assignTo;
     const description = this.interpolate(
-      action.params?.description || 'Generada automáticamente por regla',
+      action.params?.description || 'Generada automÃ¡ticamente por regla',
       context,
     );
     
-    const result = await this.repository.query(
+    const result = await this.dataSource.query(
       `INSERT INTO work_orders (
         type, priority, status, description,
         machine_code, assigned_to, created_at
@@ -339,7 +339,7 @@ export class ActionExecutor {
   ): Promise<any> {
     const inspectionType = action.params?.inspectionType || 'QUALITY';
     
-    const result = await this.repository.query(
+    const result = await this.dataSource.query(
       `INSERT INTO inspections (
         entity_type, entity_id, inspection_type, status, created_at
       ) VALUES ($1, $2, $3, 'PENDING', NOW())
@@ -357,7 +357,7 @@ export class ActionExecutor {
   ): Promise<any> {
     const newStatus = action.params?.status;
     
-    await this.repository.query(
+    await this.dataSource.query(
       `UPDATE production_orders 
        SET status = $1, updated_at = NOW()
        WHERE id = $2`,
@@ -374,7 +374,7 @@ export class ActionExecutor {
   ): Promise<any> {
     const newStatus = action.params?.status;
     
-    await this.repository.query(
+    await this.dataSource.query(
       `UPDATE machines 
        SET status = $1, updated_at = NOW()
        WHERE code = $2`,
@@ -391,7 +391,7 @@ export class ActionExecutor {
   ): Promise<any> {
     const newStatus = action.params?.status;
     
-    await this.repository.query(
+    await this.dataSource.query(
       `UPDATE material_lots 
        SET status = $1, updated_at = NOW()
        WHERE lot_number = $2`,
@@ -411,9 +411,9 @@ export class ActionExecutor {
     const fieldValue = action.params?.fieldValue;
     const idField = action.params?.idField || 'id';
     
-    // PRECAUCIÓN: Esto es vulnerable a SQL injection, solo para demo
-    // En producción usar query builder o validar tabla/campo contra whitelist
-    await this.repository.query(
+    // PRECAUCIÃ“N: Esto es vulnerable a SQL injection, solo para demo
+    // En producciÃ³n usar query builder o validar tabla/campo contra whitelist
+    await this.dataSource.query(
       `UPDATE ${tableName} 
        SET ${fieldName} = $1, updated_at = NOW()
        WHERE ${idField} = $2`,
@@ -430,12 +430,12 @@ export class ActionExecutor {
   ): Promise<any> {
     // TODO: Integrar con servicio de email
     const recipients = action.params?.recipients || [];
-    const subject = this.interpolate(action.params?.title || 'Notificación', context);
+    const subject = this.interpolate(action.params?.title || 'NotificaciÃ³n', context);
     const body = this.interpolate(action.params?.message || '', context);
     
     this.logger.log(`Email queued to ${recipients.join(', ')}: ${subject}`);
     
-    // Aquí iría la lógica de envío real
+    // AquÃ­ irÃ­a la lÃ³gica de envÃ­o real
     return { recipients, subject, queued: true };
   }
 
@@ -459,7 +459,7 @@ export class ActionExecutor {
     const eventType = action.params?.eventType || context.eventType;
     const message = this.interpolate(action.params?.message || '', context);
     
-    await this.repository.query(
+    await this.dataSource.query(
       `INSERT INTO activity_log (
         event_type, entity_type, entity_id, message,
         user_id, plant_code, created_at
@@ -485,7 +485,7 @@ export class ActionExecutor {
     const metricName = action.params?.metricName;
     const metricValue = action.params?.metricValue;
     
-    // TODO: Integrar con sistema de métricas/telemetría
+    // TODO: Integrar con sistema de mÃ©tricas/telemetrÃ­a
     this.logger.log(`Metric logged: ${metricName} = ${metricValue}`);
     
     return { metricName, metricValue };

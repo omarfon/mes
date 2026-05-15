@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import {
   RuleConditionType,
   LogicalOperator,
@@ -17,8 +17,8 @@ export class ConditionEvaluator {
   private readonly logger = new Logger(ConditionEvaluator.name);
 
   constructor(
-    @InjectRepository(Repository)
-    private readonly repository: Repository<any>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   /**
@@ -263,7 +263,7 @@ export class ConditionEvaluator {
     // TODO: Consultar tabla de inspecciones
     // Ejemplo: SELECT COUNT(*) FROM inspections WHERE order_id = ? AND status = 'PENDING'
     try {
-      const count = await this.repository.query(
+      const count = await this.dataSource.query(
         `SELECT COUNT(*) as count FROM inspections 
          WHERE entity_type = $1 AND entity_id = $2 AND status = 'PENDING' AND deleted_at IS NULL`,
         [context.entityType, context.entityId],
@@ -283,7 +283,7 @@ export class ConditionEvaluator {
   ): Promise<boolean> {
     // TODO: Consultar tabla de alertas
     try {
-      const count = await this.repository.query(
+      const count = await this.dataSource.query(
         `SELECT COUNT(*) as count FROM alerts 
          WHERE entity_type = $1 AND entity_id = $2 AND status = 'ACTIVE' AND deleted_at IS NULL`,
         [context.entityType, context.entityId],
@@ -303,7 +303,7 @@ export class ConditionEvaluator {
   ): Promise<boolean> {
     // TODO: Consultar estado del lote
     try {
-      const lot = await this.repository.query(
+      const lot = await this.dataSource.query(
         `SELECT status FROM material_lots WHERE lot_number = $1 AND deleted_at IS NULL`,
         [context.entityId],
       );
@@ -322,7 +322,7 @@ export class ConditionEvaluator {
   ): Promise<boolean> {
     // TODO: Consultar estado de la máquina
     try {
-      const machine = await this.repository.query(
+      const machine = await this.dataSource.query(
         `SELECT status FROM machines WHERE code = $1 AND deleted_at IS NULL`,
         [context.machineCode],
       );
@@ -423,7 +423,7 @@ export class ConditionEvaluator {
     try {
       // Reemplazar placeholders en la query
       const query = this.interpolateQuery(condition.query, context);
-      const queryResult = await this.repository.query(query);
+      const queryResult = await this.dataSource.query(query);
       
       // Si devuelve filas, pasó la condición
       const passed = queryResult && queryResult.length > 0;

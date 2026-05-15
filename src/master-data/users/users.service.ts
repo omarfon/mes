@@ -84,8 +84,12 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
+    if (!email) {
+      return null;
+    }
+
     return this.usersRepo.findOne({
-      where: { email: email.toLowerCase() },
+      where: { email: email.trim().toLowerCase() },
     });
   }
 
@@ -103,8 +107,7 @@ export class UsersService {
 
     let passwordHash = user.passwordHash;
     if (dto.password) {
-      // passwordHash = await bcrypt.hash(dto.password, 10);
-      passwordHash = dto.password; // TODO: reemplazar por hash real
+      passwordHash = await bcrypt.hash(dto.password, 10);
     }
 
     Object.assign(user, {

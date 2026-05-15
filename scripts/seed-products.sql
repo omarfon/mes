@@ -1,0 +1,22 @@
+INSERT INTO products (id, code, name, description, type, "unitOfMeasure", family, subfamily, "isActive", created_at, updated_at) VALUES
+  (gen_random_uuid(),'PRD-002','Tela Jersey 30/1 algodon','Tela jersey 100% algodon peinado, ancho tubular 90cm, 160 g/m2','FINISHED','metros','Tejidos','Jersey',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-003','Tela Rib 1x1 poliester','Rib 1x1 poliester reciclado, ancho 60cm, 220 g/m2','FINISHED','metros','Tejidos','Rib',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-004','Malla deportiva dry-fit','Malla 100% poliester micro, secado rapido, 140 g/m2','FINISHED','metros','Tejidos','Mallas',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-005','Dril industrial 16 oz','Dril algodon/poliester 65/35, peso 16 oz, ancho 1.50m','FINISHED','metros','Tejidos','Dril',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-006','Hilo algodon 20/1','Hilo de algodon cardado 20/1, cono 2 kg','RAW_MATERIAL','kg','Hilados','Algodon',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-007','Hilo poliester reciclado 150D','Filamento texturado poliester reciclado 150D/48F','RAW_MATERIAL','kg','Hilados','Poliester',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-008','Hilo micro poliester 75D','Filamento poliester 75D/36F para deportivos','RAW_MATERIAL','kg','Hilados','Poliester',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-009','Tela Fleece polar 280g','Polar fleece 100% poliester, 280 g/m2, ancho 1.60m','FINISHED','metros','Tejidos','Polar',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-010','Tela Spandex Lycra 20%','Tela para ropa de compresion, 80% nylon 20% lycra','FINISHED','metros','Tejidos','Spandex',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-011','Tela Gabardina stretch','Gabardina bielastica 70% poliester 25% viscosa 5% elastan','FINISHED','metros','Tejidos','Gabardina',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-012','Tela Interlock doble cara','Interlock 100% algodon pima, 200 g/m2, ancho 1.50m','FINISHED','metros','Tejidos','Interlock',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-013','Tela Pique polo','Pique 100% algodon mercerizado para camisas polo, 180 g/m2','FINISHED','metros','Tejidos','Pique',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-014','Tela Franela estampada','Franela algodon/poliester estampada, 150 g/m2','SEMI_FINISHED','metros','Tejidos','Franela',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-015','Tela Oxford impermeable','Oxford 600D poliester con recubrimiento PU, 210 g/m2','FINISHED','metros','Tejidos','Oxford',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-016','Hilo nylon 70D','Hilo nylon 70D brillante para calceteria y lenceria','RAW_MATERIAL','kg','Hilados','Nylon',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-017','Tela Alpaca 100%','Tela de alpaca fina 100%, 250 g/m2','FINISHED','metros','Tejidos','Alpaca',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-018','Tela Denim 12 oz','Denim 100% algodon, 12 oz, indigo, ancho 1.50m','FINISHED','metros','Tejidos','Denim',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-019','Tinte reactivo azul marino','Tinte reactivo concentrado azul marino para algodon','RAW_MATERIAL','kg','Insumos','Tintes',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-020','Tinte disperso negro','Tinte disperso negro para poliester alta temperatura','RAW_MATERIAL','kg','Insumos','Tintes',true,NOW(),NOW()),
+  (gen_random_uuid(),'PRD-021','Suavizante textil industrial','Suavizante silicona para acabado de telas, bidon 50 kg','RAW_MATERIAL','litros','Insumos','Acabados',true,NOW(),NOW())
+ON CONFLICT (code) DO NOTHING;

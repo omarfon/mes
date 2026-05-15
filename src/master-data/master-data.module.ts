@@ -32,6 +32,7 @@ import { MaterialLotsModule } from './material-lots/material-lots.module';
 import { RoutingsModule } from './routings/routings.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { BillOfMaterialsModule } from './bill-of-materials/bill-of-materials.module';
+import { EmpresasModule } from './empresas/empresas.module';
 
 @Module({
   imports:[
@@ -64,6 +65,7 @@ import { BillOfMaterialsModule } from './bill-of-materials/bill-of-materials.mod
     RoutingsModule,
     RecipesModule,
     BillOfMaterialsModule,
+    EmpresasModule,
   ],
   controllers: [
     MachinesController, 

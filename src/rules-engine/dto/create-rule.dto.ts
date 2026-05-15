@@ -19,7 +19,7 @@ import {
   RuleScope,
   LogicalOperator,
 } from '../types/rule-enums';
-import { ConditionGroup, ActionDefinition } from '../types/rule-types';
+import type { ConditionGroup, ActionDefinition } from '../types/rule-types';
 
 export class CreateRuleDto {
   @IsString()
