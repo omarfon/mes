@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Param, Query, ParseUUIDPipe } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Query, ParseUUIDPipe, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { ActivityLogService } from './activity-log.service';
 import { CreateActivityLogDto } from './dto/create-activity-log.dto';
 import { FilterActivityLogDto } from './dto/filter-activity-log.dto';
@@ -13,6 +13,32 @@ export class ActivityLogController {
   @ApiOperation({ summary: 'Crear registro de actividad' })
   async create(@Body() dto: CreateActivityLogDto) {
     return this.activityLogService.create(dto);
+  }
+
+  @Get('dashboard')
+  @ApiOperation({ summary: 'Dashboard de auditoría: recientes + conteos + top usuarios' })
+  async getDashboard() {
+    return this.activityLogService.getDashboard();
+  }
+
+  @Get('recent')
+  @ApiOperation({ summary: 'Últimas transacciones con filtro opcional de usuario' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'userEmail', required: false, type: String })
+  async getRecentTransactions(
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+    @Query('userEmail') userEmail?: string,
+  ) {
+    return this.activityLogService.getRecentTransactions(limit, userEmail);
+  }
+
+  @Get('by-user')
+  @ApiOperation({ summary: 'Transacciones agrupadas por usuario' })
+  @ApiQuery({ name: 'days', required: false, type: Number })
+  async getByUser(
+    @Query('days', new DefaultValuePipe(30), ParseIntPipe) days: number,
+  ) {
+    return this.activityLogService.getByUser(days);
   }
 
   @Get()

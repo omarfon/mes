@@ -44,15 +44,15 @@ export class AuditsService {
     }
 
     if (startDate && endDate) {
-      where.createdAt = Between(new Date(startDate), new Date(endDate));
+      where.fechaCreacion = Between(new Date(startDate), new Date(endDate));
     } else if (startDate) {
-      where.createdAt = Between(new Date(startDate), new Date());
+      where.fechaCreacion = Between(new Date(startDate), new Date());
     }
 
     const [data, total] = await this.auditRepository.findAndCount({
       where,
       relations: ['user'],
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
       take: limit,
       skip,
     });
@@ -83,7 +83,7 @@ export class AuditsService {
     return this.auditRepository.find({
       where: { entityType, entityId },
       relations: ['user'],
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
     });
   }
 
@@ -91,7 +91,7 @@ export class AuditsService {
     return this.auditRepository.find({
       where: { userId },
       relations: ['user'],
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
       take: limit,
     });
   }
@@ -142,10 +142,10 @@ export class AuditsService {
     const activity = await this.auditRepository.find({
       where: {
         userId,
-        createdAt: Between(startDate, new Date()),
+        fechaCreacion: Between(startDate, new Date()),
       },
       relations: ['user'],
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
     });
 
     const stats = await this.auditRepository

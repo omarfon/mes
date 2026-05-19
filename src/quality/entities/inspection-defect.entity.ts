@@ -1,15 +1,16 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 import { QualityInspection } from './inspection.entity';
 import { Defect } from './defect.entity';
 
 @Entity({ name: 'inspection_defects' })
-export class InspectionDefect {
+export class InspectionDefect extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -17,7 +18,7 @@ export class InspectionDefect {
   inspectionId: string;
 
   @ManyToOne(() => QualityInspection, (i) => i.defects, {
-    onDelete: 'CASCADE',
+    onDelete: 'CASCADE'
   })
   @JoinColumn({ name: 'inspection_id' })
   inspection: QualityInspection;

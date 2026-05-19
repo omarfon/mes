@@ -1,11 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Index,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
+  Index
 } from 'typeorm';
 
 export enum ScrapClassification {
@@ -14,12 +12,12 @@ export enum ScrapClassification {
   MATERIAL = 'MATERIAL',
   OPERATOR = 'OPERATOR',
   DESIGN = 'DESIGN',
-  OTHER = 'OTHER',
+  OTHER = 'OTHER'
 }
 
 @Entity({ name: 'scrap_reasons' })
 @Index(['code'], { unique: true })
-export class ScrapReason {
+export class ScrapReason extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -32,7 +30,7 @@ export class ScrapReason {
   @Column({
     type: 'enum',
     enum: ScrapClassification,
-    default: ScrapClassification.OTHER,
+    default: ScrapClassification.OTHER
   })
   classification!: ScrapClassification;
 
@@ -47,13 +45,4 @@ export class ScrapReason {
 
   @Column({ type: 'boolean', default: true })
   active!: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date;
 }

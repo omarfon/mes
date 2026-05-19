@@ -1,11 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 export enum TipoProceso {
@@ -16,19 +14,19 @@ export enum TipoProceso {
   LOGISTICA = 'LOGISTICA',
   CALIDAD = 'CALIDAD',
   MANTENIMIENTO = 'MANTENIMIENTO',
-  OTRO = 'OTRO',
+  OTRO = 'OTRO'
 }
 
 export enum EstadoProceso {
   ACTIVO = 'ACTIVO',
   INACTIVO = 'INACTIVO',
   EN_REVISION = 'EN_REVISION',
-  OBSOLETO = 'OBSOLETO',
+  OBSOLETO = 'OBSOLETO'
 }
 
 @Entity({ name: 'procesos' })
 @Index(['codigo'], { unique: true })
-export class Proceso {
+export class Proceso extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -56,7 +54,7 @@ export class Proceso {
   @Column({
     type: 'enum',
     enum: TipoProceso,
-    default: TipoProceso.MANUFACTURA,
+    default: TipoProceso.MANUFACTURA
   })
   tipo: TipoProceso;
 
@@ -66,7 +64,7 @@ export class Proceso {
   @Column({
     type: 'enum',
     enum: EstadoProceso,
-    default: EstadoProceso.ACTIVO,
+    default: EstadoProceso.ACTIVO
   })
   estado: EstadoProceso;
 
@@ -188,13 +186,4 @@ export class Proceso {
    */
   @Column({ type: 'uuid', nullable: true })
   procesoPadreId?: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp', nullable: true })
-  deletedAt?: Date;
 }

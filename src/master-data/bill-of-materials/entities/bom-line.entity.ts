@@ -1,16 +1,15 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 import { BillOfMaterial } from './bill-of-material.entity';
 
 @Entity({ name: 'bom_lines' })
-export class BomLine {
+export class BomLine extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -44,10 +43,4 @@ export class BomLine {
 
   @Column({ type: 'text', default: '' })
   notes!: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
 }

@@ -40,7 +40,7 @@ export class ComponentsService {
       query.andWhere('component.status = :status', { status: filters.status });
     }
 
-    query.orderBy('component.createdAt', 'DESC');
+    query.orderBy('component.created_at', 'DESC');
 
     return await query.getMany();
   }

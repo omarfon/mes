@@ -47,7 +47,7 @@ export class GenealogyService {
   async findAll(): Promise<LotGenealogy[]> {
     return this.genealogyRepository.find({
       relations: ['parentLot', 'childLot'],
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
     });
   }
 
@@ -68,7 +68,7 @@ export class GenealogyService {
     return this.genealogyRepository.find({
       where: [{ parentLotId: lotId }, { childLotId: lotId }],
       relations: ['parentLot', 'childLot'],
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
     });
   }
 
@@ -76,7 +76,7 @@ export class GenealogyService {
     return this.genealogyRepository.find({
       where: { childLotId: lotId },
       relations: ['parentLot', 'childLot'],
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
     });
   }
 
@@ -84,7 +84,7 @@ export class GenealogyService {
     return this.genealogyRepository.find({
       where: { parentLotId: lotId },
       relations: ['parentLot', 'childLot'],
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
     });
   }
 

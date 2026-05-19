@@ -1,23 +1,21 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Index,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
+  Index
 } from 'typeorm';
 
 export enum OrderPriority {
   LOW = 'LOW',
   NORMAL = 'NORMAL',
   HIGH = 'HIGH',
-  URGENT = 'URGENT',
+  URGENT = 'URGENT'
 }
 
 @Entity({ name: 'order_types' })
 @Index(['code'], { unique: true })
-export class OrderType {
+export class OrderType extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -33,7 +31,7 @@ export class OrderType {
   @Column({
     type: 'enum',
     enum: OrderPriority,
-    default: OrderPriority.NORMAL,
+    default: OrderPriority.NORMAL
   })
   priority!: OrderPriority;
 
@@ -51,13 +49,4 @@ export class OrderType {
 
   @Column({ type: 'boolean', default: true })
   active!: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date;
 }

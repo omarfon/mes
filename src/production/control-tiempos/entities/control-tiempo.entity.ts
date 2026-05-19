@@ -1,14 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 export enum TipoRegistroTiempo {
   INICIO = 'INICIO',
   FIN = 'FIN',
   PAUSA = 'PAUSA',
-  REANUDACION = 'REANUDACION',
+  REANUDACION = 'REANUDACION'
 }
 
 @Entity({ name: 'control_tiempos' })
-export class ControlTiempo {
+export class ControlTiempo extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -39,10 +40,4 @@ export class ControlTiempo {
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: any;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

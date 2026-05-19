@@ -1,18 +1,18 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
+  Column
 } from 'typeorm';
 
 export enum DefectSeverity {
   MINOR = 'MINOR',
   MAJOR = 'MAJOR',
-  CRITICAL = 'CRITICAL',
+  CRITICAL = 'CRITICAL'
 }
 
 @Entity({ name: 'quality_defects' })
-export class Defect {
+export class Defect extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -27,7 +27,4 @@ export class Defect {
 
   @Column({ type: 'enum', enum: DefectSeverity })
   severity: DefectSeverity;
-
-  @CreateDateColumn()
-  createdAt: Date;
 }

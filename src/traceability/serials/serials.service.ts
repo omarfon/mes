@@ -49,7 +49,7 @@ export class SerialsService {
       query.andWhere('serial.customerId = :customerId', { customerId: filters.customerId });
     }
 
-    return query.orderBy('serial.createdAt', 'DESC').getMany();
+    return query.orderBy('serial.created_at', 'DESC').getMany();
   }
 
   async findOne(id: string): Promise<Serial> {
@@ -100,7 +100,7 @@ export class SerialsService {
   async findByLotId(lotId: string): Promise<Serial[]> {
     return this.serialRepository.find({
       where: { lotId },
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
     });
   }
 

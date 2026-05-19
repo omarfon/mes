@@ -90,7 +90,7 @@ export class TraceabilityService {
       where,
       skip: (page - 1) * limit,
       take: limit,
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
       relations: ['product', 'productionOrder'],
     });
 

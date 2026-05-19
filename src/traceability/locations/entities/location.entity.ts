@@ -1,12 +1,11 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 export enum LocationType {
@@ -18,12 +17,12 @@ export enum LocationType {
   PRODUCTION_LINE = 'PRODUCTION_LINE',
   QUARANTINE = 'QUARANTINE',
   INSPECTION = 'INSPECTION',
-  SHIPPING = 'SHIPPING',
+  SHIPPING = 'SHIPPING'
 }
 
 @Entity('locations')
 @Index(['code'], { unique: true })
-export class Location {
+export class Location extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -35,7 +34,7 @@ export class Location {
 
   @Column({
     type: 'enum',
-    enum: LocationType,
+    enum: LocationType
   })
   type: LocationType;
 
@@ -67,12 +66,6 @@ export class Location {
 
   @Column({ type: 'text', nullable: true })
   description: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   // Relación auto-referencial para jerarquía
   @ManyToOne(() => Location, { nullable: true })

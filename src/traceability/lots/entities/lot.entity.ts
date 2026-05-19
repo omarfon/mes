@@ -1,10 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 export enum LotStatus {
@@ -15,13 +14,13 @@ export enum LotStatus {
   RELEASED = 'RELEASED',
   BLOCKED = 'BLOCKED',
   SCRAPPED = 'SCRAPPED',
-  SHIPPED = 'SHIPPED',
+  SHIPPED = 'SHIPPED'
 }
 
 @Entity('lots')
 @Index(['lotNumber'], { unique: true })
 @Index(['productId', 'status'])
-export class Lot {
+export class Lot extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -46,7 +45,7 @@ export class Lot {
   @Column({
     type: 'enum',
     enum: LotStatus,
-    default: LotStatus.CREATED,
+    default: LotStatus.CREATED
   })
   status: LotStatus;
 
@@ -134,15 +133,9 @@ export class Lot {
   @Column({ type: 'jsonb', nullable: true })
   metadata: any;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
   @Column({ name: 'created_by_id', type: 'uuid', nullable: true })
   createdById: string;
 
   @Column({ name: 'created_by_name', length: 200, nullable: true })
   createdByName: string;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

@@ -1,11 +1,11 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   Index,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 import { User } from '../../../master-data/users/entities/user.entity';
 
@@ -19,20 +19,20 @@ export enum AuditAction {
   APPROVE = 'APPROVE',
   REJECT = 'REJECT',
   BLOCK = 'BLOCK',
-  UNBLOCK = 'UNBLOCK',
+  UNBLOCK = 'UNBLOCK'
 }
 
 @Entity('audits')
 @Index(['entityType', 'entityId'])
-@Index(['userId', 'createdAt'])
-@Index(['action', 'createdAt'])
-export class Audit {
+@Index(['userId', 'fechaCreacion'])
+@Index(['action', 'fechaCreacion'])
+export class Audit extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({
     type: 'enum',
-    enum: AuditAction,
+    enum: AuditAction
   })
   action: AuditAction;
 
@@ -69,7 +69,4 @@ export class Audit {
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: any;
-
-  @CreateDateColumn()
-  createdAt: Date;
 }

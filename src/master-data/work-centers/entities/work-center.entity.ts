@@ -1,13 +1,11 @@
 import { Machine } from 'src/master-data/machines/entities/machines.entity';
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 
@@ -20,7 +18,7 @@ export enum WorkCenterType {
 
 @Entity({ name: 'work_centers' })
 @Index(['code'], { unique: true })
-export class WorkCenter {
+export class WorkCenter extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -36,7 +34,7 @@ export class WorkCenter {
   @Column({
     type: 'enum',
     enum: WorkCenterType,
-    default: WorkCenterType.LINE,
+    default: WorkCenterType.LINE
   })
   type: WorkCenterType;
 
@@ -54,13 +52,4 @@ export class WorkCenter {
 
   @OneToMany(() => Machine, (machine) => machine.workCenter)
   machines: Machine[];
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date | null;
 }

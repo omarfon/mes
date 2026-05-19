@@ -1,17 +1,16 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
+  OneToMany
 } from 'typeorm';
 import { ComponentStatus } from '../enums/component-status.enum';
 import { ComponentCriticality } from '../enums/component-criticality.enum';
 import { MaintenanceRecord } from './maintenance-record.entity';
 
 @Entity('maintenance_components')
-export class Component {
+export class Component extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -33,7 +32,7 @@ export class Component {
   @Column({
     type: 'enum',
     enum: ComponentStatus,
-    default: ComponentStatus.OPERATIONAL,
+    default: ComponentStatus.OPERATIONAL
   })
   status: ComponentStatus;
 
@@ -49,7 +48,7 @@ export class Component {
   @Column({
     type: 'enum',
     enum: ComponentCriticality,
-    default: ComponentCriticality.MEDIUM,
+    default: ComponentCriticality.MEDIUM
   })
   criticality: ComponentCriticality;
 
@@ -73,10 +72,4 @@ export class Component {
 
   @OneToMany(() => MaintenanceRecord, (record) => record.component)
   maintenanceRecords: MaintenanceRecord[];
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

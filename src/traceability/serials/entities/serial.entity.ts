@@ -1,12 +1,11 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 import { Lot } from '../../lots/entities/lot.entity';
 
@@ -18,12 +17,12 @@ export enum SerialStatus {
   SHIPPED = 'SHIPPED',
   RETURNED = 'RETURNED',
   SCRAPPED = 'SCRAPPED',
-  IN_WARRANTY = 'IN_WARRANTY',
+  IN_WARRANTY = 'IN_WARRANTY'
 }
 
 @Entity('serials')
 @Index(['serialNumber'], { unique: true })
-export class Serial {
+export class Serial extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -39,7 +38,7 @@ export class Serial {
   @Column({
     type: 'enum',
     enum: SerialStatus,
-    default: SerialStatus.IN_PRODUCTION,
+    default: SerialStatus.IN_PRODUCTION
   })
   status: SerialStatus;
 
@@ -78,12 +77,6 @@ export class Serial {
 
   @Column({ type: 'text', nullable: true })
   notes: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   // Relaciones
   @ManyToOne(() => Lot)

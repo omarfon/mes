@@ -1,11 +1,11 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
-  CreateDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 import { Lot } from '../../lots/entities/lot.entity';
 
@@ -20,7 +20,7 @@ export enum RelationType {
 
 @Entity('lot_genealogy')
 @Index(['parentLotId', 'childLotId'], { unique: true })
-export class LotGenealogy {
+export class LotGenealogy extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -32,7 +32,7 @@ export class LotGenealogy {
 
   @Column({
     type: 'enum',
-    enum: RelationType,
+    enum: RelationType
   })
   relationType: RelationType;
 
@@ -47,9 +47,6 @@ export class LotGenealogy {
 
   @Column({ name: 'work_order_id', nullable: true })
   workOrderId: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
 
   // Relaciones
   @ManyToOne(() => Lot)

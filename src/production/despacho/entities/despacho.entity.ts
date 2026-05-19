@@ -1,11 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 export enum EstadoDespacho {
@@ -14,18 +12,18 @@ export enum EstadoDespacho {
   LISTO = 'LISTO',
   EN_TRANSITO = 'EN_TRANSITO',
   ENTREGADO = 'ENTREGADO',
-  CANCELADO = 'CANCELADO',
+  CANCELADO = 'CANCELADO'
 }
 
 export enum TipoDespacho {
   CLIENTE = 'CLIENTE',
   INTERNO = 'INTERNO',
-  TRANSFERENCIA = 'TRANSFERENCIA',
+  TRANSFERENCIA = 'TRANSFERENCIA'
 }
 
 @Entity({ name: 'despachos' })
 @Index(['numeroDespacho'], { unique: true })
-export class Despacho {
+export class Despacho extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -47,7 +45,7 @@ export class Despacho {
   @Column({
     type: 'enum',
     enum: TipoDespacho,
-    default: TipoDespacho.CLIENTE,
+    default: TipoDespacho.CLIENTE
   })
   tipo: TipoDespacho;
 
@@ -57,7 +55,7 @@ export class Despacho {
   @Column({
     type: 'enum',
     enum: EstadoDespacho,
-    default: EstadoDespacho.PENDIENTE,
+    default: EstadoDespacho.PENDIENTE
   })
   estado: EstadoDespacho;
 
@@ -178,12 +176,4 @@ export class Despacho {
   /**
    * Campos de auditoría
    */
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt: Date;
 }

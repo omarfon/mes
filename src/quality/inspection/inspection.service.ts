@@ -117,7 +117,7 @@ export class InspectionsService {
       take: limit,
       skip: (page - 1) * limit,
       relations: ['defects', 'defects.defect', 'node'],
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
     });
 
     return { data, total, page, limit };

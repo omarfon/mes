@@ -1,16 +1,15 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 import { Recipe } from './recipe.entity';
 
 @Entity({ name: 'recipe_params' })
-export class RecipeParam {
+export class RecipeParam extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -41,10 +40,4 @@ export class RecipeParam {
 
   @Column({ type: 'text', default: '' })
   notes!: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
 }

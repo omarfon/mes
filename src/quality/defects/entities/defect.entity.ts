@@ -1,11 +1,10 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
+  JoinColumn
 } from 'typeorm';
 import { DefectFamily } from '../../families/entities/defect-family.entity';
 import { Severity } from '../../severities/entities/severity.entity';
@@ -14,11 +13,11 @@ export enum DefectStatus {
   OPEN = 'OPEN',
   IN_REVIEW = 'IN_REVIEW',
   RESOLVED = 'RESOLVED',
-  CLOSED = 'CLOSED',
+  CLOSED = 'CLOSED'
 }
 
 @Entity('quality_defects')
-export class Defect {
+export class Defect extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -40,7 +39,7 @@ export class Defect {
   @Column({
     type: 'enum',
     enum: DefectStatus,
-    default: DefectStatus.OPEN,
+    default: DefectStatus.OPEN
   })
   status: DefectStatus;
 
@@ -73,12 +72,6 @@ export class Defect {
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   // Relaciones
   @ManyToOne(() => DefectFamily)

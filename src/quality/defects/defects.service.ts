@@ -65,7 +65,7 @@ export class DefectsService {
       });
     }
 
-    return query.orderBy('defect.createdAt', 'DESC').getMany();
+    return query.orderBy('defect.created_at', 'DESC').getMany();
   }
 
   async findOne(id: string): Promise<Defect> {

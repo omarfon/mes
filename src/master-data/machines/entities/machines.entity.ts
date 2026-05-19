@@ -1,13 +1,11 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
   JoinColumn,
-  Index,
+  Index
 } from 'typeorm';
 import { WorkCenter } from './work-center.entity';
 
@@ -17,12 +15,12 @@ import { WorkCenter } from './work-center.entity';
 export enum MachineStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
-  MAINTENANCE = 'MAINTENANCE',
+  MAINTENANCE = 'MAINTENANCE'
 }
 
 @Entity({ name: 'machines' })
 @Index(['code'], { unique: true })
-export class Machine {
+export class Machine extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -92,7 +90,7 @@ export class Machine {
   @Column({
     type: 'enum',
     enum: MachineStatus,
-    default: MachineStatus.ACTIVE,
+    default: MachineStatus.ACTIVE
   })
   status: MachineStatus;
 
@@ -111,7 +109,7 @@ export class Machine {
 
   @ManyToOne(() => WorkCenter, (wc) => wc.machines, {
     nullable: true,
-    onDelete: 'SET NULL',
+    onDelete: 'SET NULL'
   })
   @JoinColumn({ name: 'work_center_id' })
   workCenter?: WorkCenter | null;
@@ -119,16 +117,9 @@ export class Machine {
   /**
    * Campos de auditoría
    */
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   /**
    * Soft delete (no se borra físicamente)
    */
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date | null;
 }
 

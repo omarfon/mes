@@ -1,11 +1,10 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
+  JoinColumn
 } from 'typeorm';
 import { Route } from './route.entity';
 import { WorkCenter } from '../../machines/entities/work-center.entity';
@@ -13,7 +12,7 @@ import { Machine } from 'src/master-data/machines/entities/machines.entity';
 
 
 @Entity({ name: 'route_operations' })
-export class RouteOperation {
+export class RouteOperation extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,7 +23,7 @@ export class RouteOperation {
   routeId: string;
 
   @ManyToOne(() => Route, (route) => route.operations, {
-    onDelete: 'CASCADE',
+    onDelete: 'CASCADE'
   })
   @JoinColumn({ name: 'route_id' })
   route: Route;
@@ -80,10 +79,4 @@ export class RouteOperation {
    */
   @Column({ type: 'text', nullable: true })
   notes?: string | null;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

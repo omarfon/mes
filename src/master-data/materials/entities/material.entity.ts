@@ -1,22 +1,20 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Index,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
+  Index
 } from 'typeorm';
 
 export enum MaterialType {
   RAW = 'RAW',
   WIP = 'WIP',
-  FINISHED = 'FINISHED',
+  FINISHED = 'FINISHED'
 }
 
 @Entity({ name: 'materials' })
 @Index(['code'], { unique: true })
-export class Material {
+export class Material extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -29,7 +27,7 @@ export class Material {
   @Column({
     type: 'enum',
     enum: MaterialType,
-    default: MaterialType.RAW,
+    default: MaterialType.RAW
   })
   type!: MaterialType;
 
@@ -38,13 +36,4 @@ export class Material {
 
   @Column({ type: 'boolean', default: true })
   active!: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date;
 }

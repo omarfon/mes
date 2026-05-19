@@ -1,11 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Index,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
+  Index
 } from 'typeorm';
 
 export enum ProductType {
@@ -18,7 +16,7 @@ export enum ProductType {
 
 @Entity({ name: 'products' })
 @Index(['code'], { unique: true })
-export class Product {
+export class Product extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -47,7 +45,7 @@ export class Product {
   @Column({
     type: 'enum',
     enum: ProductType,
-    default: ProductType.FINISHED,
+    default: ProductType.FINISHED
   })
   type: ProductType;
 
@@ -87,12 +85,4 @@ export class Product {
   /**
    * Auditoría
    */
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date | null;
 }

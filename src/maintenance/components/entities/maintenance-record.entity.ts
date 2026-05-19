@@ -1,16 +1,16 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 import { MaintenanceRecordType } from '../enums/maintenance-record-type.enum';
 import { Component } from './component.entity';
 
 @Entity('maintenance_records')
-export class MaintenanceRecord {
+export class MaintenanceRecord extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -23,7 +23,7 @@ export class MaintenanceRecord {
 
   @Column({
     type: 'enum',
-    enum: MaintenanceRecordType,
+    enum: MaintenanceRecordType
   })
   type: MaintenanceRecordType;
 
@@ -38,7 +38,4 @@ export class MaintenanceRecord {
 
   @Column({ type: 'timestamp' })
   date: Date;
-
-  @CreateDateColumn()
-  createdAt: Date;
 }

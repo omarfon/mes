@@ -101,7 +101,7 @@ export class MachinesService {
       where: finalWhere,
       take: limit,
       skip: offset,
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
       relations: ['workCenter'], // Cargar relación si es necesario mostrar info del centro
     });
 

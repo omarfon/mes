@@ -207,7 +207,7 @@ export class MotivosParadaService {
       throw new NotFoundException(`Motivo de parada con id ${id} no encontrado`);
     }
 
-    if (!motivo.deletedAt) {
+    if (!motivo.fechaEliminacion) {
       throw new ConflictException(`El motivo de parada ${motivo.codigo} no está eliminado`);
     }
 
@@ -215,7 +215,7 @@ export class MotivosParadaService {
     
     // Activar automáticamente al restaurar
     motivo.activo = true;
-    motivo.deletedAt = undefined;
+    motivo.fechaEliminacion = null;
     await this.motivosRepo.save(motivo);
     
     return motivo;

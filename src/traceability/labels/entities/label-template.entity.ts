@@ -1,20 +1,19 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
+  Column
 } from 'typeorm';
 
 export enum LabelFormat {
   ZPL = 'ZPL',     // Zebra Programming Language
   EPL = 'EPL',     // Eltron Programming Language
   PDF = 'PDF',
-  HTML = 'HTML',
+  HTML = 'HTML'
 }
 
 @Entity('label_templates')
-export class LabelTemplate {
+export class LabelTemplate extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -26,7 +25,7 @@ export class LabelTemplate {
 
   @Column({
     type: 'enum',
-    enum: LabelFormat,
+    enum: LabelFormat
   })
   format: LabelFormat;
 
@@ -45,10 +44,4 @@ export class LabelTemplate {
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

@@ -1,18 +1,16 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   Index,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  OneToMany,
+  OneToMany
 } from 'typeorm';
 import { RecipeParam } from './recipe-param.entity';
 
 @Entity({ name: 'recipes' })
 @Index(['code'], { unique: true })
-export class Recipe {
+export class Recipe extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -42,13 +40,4 @@ export class Recipe {
 
   @OneToMany(() => RecipeParam, (param) => param.recipe, { cascade: true })
   params!: RecipeParam[];
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date;
 }

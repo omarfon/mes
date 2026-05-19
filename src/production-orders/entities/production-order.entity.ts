@@ -1,4 +1,5 @@
 import { WorkCenter } from 'src/master-data/machines/entities/work-center.entity';
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import { Product } from 'src/master-data/products/entities/product.entity';
 import { Route } from 'src/master-data/routes/entities/route.entity';
 import { Shift } from 'src/master-data/schift/entities/schift.entity';
@@ -9,10 +10,7 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 import { ProductionOrderOperation } from './product-order-operation.entity';
 
@@ -23,19 +21,19 @@ export enum ProductionOrderStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   PAUSED = 'PAUSED',
   COMPLETED = 'COMPLETED',
-  CANCELED = 'CANCELED',
+  CANCELED = 'CANCELED'
 }
 
 export enum ProductionOrderPriority {
   LOW = 'LOW',
   NORMAL = 'NORMAL',
   HIGH = 'HIGH',
-  URGENT = 'URGENT',
+  URGENT = 'URGENT'
 }
 
 @Entity({ name: 'production_orders' })
 @Index(['code'], { unique: true })
-export class ProductionOrder {
+export class ProductionOrder extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -96,7 +94,7 @@ export class ProductionOrder {
   @Column({
     type: 'enum',
     enum: ProductionOrderStatus,
-    default: ProductionOrderStatus.PLANNED,
+    default: ProductionOrderStatus.PLANNED
   })
   status: ProductionOrderStatus;
 
@@ -106,7 +104,7 @@ export class ProductionOrder {
   @Column({
     type: 'enum',
     enum: ProductionOrderPriority,
-    default: ProductionOrderPriority.NORMAL,
+    default: ProductionOrderPriority.NORMAL
   })
   priority: ProductionOrderPriority;
 
@@ -173,12 +171,4 @@ export class ProductionOrder {
   /**
    * Auditoría
    */
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date | null;
 }

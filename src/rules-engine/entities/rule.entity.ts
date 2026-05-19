@@ -1,19 +1,17 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   Index,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  OneToMany,
+  OneToMany
 } from 'typeorm';
 import {
   RuleEventType,
   RulePriority,
   RuleStatus,
   RuleScope,
-  LogicalOperator,
+  LogicalOperator
 } from '../types/rule-enums';
 import type { ConditionGroup, ActionDefinition } from '../types/rule-types';
 import { RuleExecution } from './rule-execution.entity';
@@ -23,7 +21,7 @@ import { RuleExecution } from './rule-execution.entity';
 @Index(['eventType'])
 @Index(['status'])
 @Index(['scope', 'scopeValue'])
-export class Rule {
+export class Rule extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -39,7 +37,7 @@ export class Rule {
   // Evento que dispara la regla
   @Column({
     type: 'enum',
-    enum: RuleEventType,
+    enum: RuleEventType
   })
   eventType!: RuleEventType;
 
@@ -47,7 +45,7 @@ export class Rule {
   @Column({
     type: 'enum',
     enum: RulePriority,
-    default: RulePriority.MEDIUM,
+    default: RulePriority.MEDIUM
   })
   priority!: RulePriority;
 
@@ -59,7 +57,7 @@ export class Rule {
   @Column({
     type: 'enum',
     enum: RuleScope,
-    default: RuleScope.GLOBAL,
+    default: RuleScope.GLOBAL
   })
   scope!: RuleScope;
 
@@ -69,7 +67,7 @@ export class Rule {
   // Condiciones (almacenadas como JSON)
   @Column({
     type: 'jsonb',
-    nullable: true,
+    nullable: true
   })
   conditions?: ConditionGroup;
 
@@ -77,13 +75,13 @@ export class Rule {
   @Column({
     type: 'enum',
     enum: LogicalOperator,
-    default: LogicalOperator.AND,
+    default: LogicalOperator.AND
   })
   conditionsOperator!: LogicalOperator;
 
   // Acciones a ejecutar
   @Column({
-    type: 'jsonb',
+    type: 'jsonb'
   })
   actions!: ActionDefinition[];
 
@@ -91,7 +89,7 @@ export class Rule {
   @Column({
     type: 'enum',
     enum: RuleStatus,
-    default: RuleStatus.ACTIVE,
+    default: RuleStatus.ACTIVE
   })
   status!: RuleStatus;
 
@@ -135,15 +133,6 @@ export class Rule {
 
   @Column({ type: 'varchar', length: 100, nullable: true, name: 'updated_by' })
   updatedBy?: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date;
 
   // Relaciones
   @OneToMany(() => RuleExecution, (execution) => execution.rule)

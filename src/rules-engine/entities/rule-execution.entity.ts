@@ -1,17 +1,17 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   Index,
-  CreateDateColumn,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 import { ExecutionResult } from '../types/rule-enums';
 import {
   RuleContext,
   ConditionEvaluationResult,
-  ActionExecutionResult,
+  ActionExecutionResult
 } from '../types/rule-types';
 import { Rule } from './rule.entity';
 
@@ -20,7 +20,7 @@ import { Rule } from './rule.entity';
 @Index(['eventType'])
 @Index(['result'])
 @Index(['executedAt'])
-export class RuleExecution {
+export class RuleExecution extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -63,7 +63,7 @@ export class RuleExecution {
   // Resultado general
   @Column({
     type: 'enum',
-    enum: ExecutionResult,
+    enum: ExecutionResult
   })
   result!: ExecutionResult;
 
@@ -90,7 +90,7 @@ export class RuleExecution {
   @Column({ type: 'jsonb', nullable: true })
   metadata?: Record<string, any>;
 
-  @CreateDateColumn({ name: 'executed_at' })
+  @Column({ type: 'timestamp', name: 'executed_at', default: () => 'CURRENT_TIMESTAMP' })
   executedAt!: Date;
 
   // Relaciones

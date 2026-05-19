@@ -1,17 +1,16 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 export enum NotificationType {
   INFO = 'INFO',
   WARNING = 'WARNING',
   ERROR = 'ERROR',
-  SUCCESS = 'SUCCESS',
+  SUCCESS = 'SUCCESS'
 }
 
 export enum NotificationCategory {
@@ -19,13 +18,13 @@ export enum NotificationCategory {
   MACHINE = 'MACHINE',
   QUALITY = 'QUALITY',
   MAINTENANCE = 'MAINTENANCE',
-  SYSTEM = 'SYSTEM',
+  SYSTEM = 'SYSTEM'
 }
 
 @Entity({ name: 'notifications' })
 @Index(['userId', 'isRead'])
-@Index(['createdAt'])
-export class Notification {
+@Index(['fechaCreacion'])
+export class Notification extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -41,14 +40,14 @@ export class Notification {
   @Column({
     type: 'enum',
     enum: NotificationType,
-    default: NotificationType.INFO,
+    default: NotificationType.INFO
   })
   type: NotificationType;
 
   @Column({
     type: 'enum',
     enum: NotificationCategory,
-    default: NotificationCategory.SYSTEM,
+    default: NotificationCategory.SYSTEM
   })
   category: NotificationCategory;
 
@@ -63,10 +62,4 @@ export class Notification {
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any> | null;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

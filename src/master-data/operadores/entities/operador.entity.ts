@@ -1,11 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 export enum EstadoOperador {
@@ -13,7 +11,7 @@ export enum EstadoOperador {
   INACTIVO = 'INACTIVO',
   VACACIONES = 'VACACIONES',
   BAJA_TEMPORAL = 'BAJA_TEMPORAL',
-  BAJA_DEFINITIVA = 'BAJA_DEFINITIVA',
+  BAJA_DEFINITIVA = 'BAJA_DEFINITIVA'
 }
 
 export enum NivelHabilidad {
@@ -21,13 +19,13 @@ export enum NivelHabilidad {
   BASICO = 'BASICO',
   INTERMEDIO = 'INTERMEDIO',
   AVANZADO = 'AVANZADO',
-  EXPERTO = 'EXPERTO',
+  EXPERTO = 'EXPERTO'
 }
 
 @Entity({ name: 'operadores' })
 @Index(['codigo'], { unique: true })
 @Index(['numeroEmpleado'], { unique: true })
-export class Operador {
+export class Operador extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -73,7 +71,7 @@ export class Operador {
   @Column({
     type: 'enum',
     enum: EstadoOperador,
-    default: EstadoOperador.ACTIVO,
+    default: EstadoOperador.ACTIVO
   })
   estado: EstadoOperador;
 
@@ -83,7 +81,7 @@ export class Operador {
   @Column({
     type: 'enum',
     enum: NivelHabilidad,
-    default: NivelHabilidad.BASICO,
+    default: NivelHabilidad.BASICO
   })
   nivelHabilidad: NivelHabilidad;
 
@@ -158,13 +156,4 @@ export class Operador {
    */
   @Column({ type: 'uuid', nullable: true })
   userId?: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp', nullable: true })
-  deletedAt?: Date;
 }

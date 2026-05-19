@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 @Entity({ name: 'wip' })
-export class WIP {
+export class WIP extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -41,10 +42,4 @@ export class WIP {
 
   @Column({ type: 'jsonb', nullable: true })
   movimientos: any;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

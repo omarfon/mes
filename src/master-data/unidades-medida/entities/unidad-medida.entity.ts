@@ -1,11 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 export enum TipoUnidadMedida {
@@ -19,13 +17,13 @@ export enum TipoUnidadMedida {
   VELOCIDAD = 'VELOCIDAD',
   PRESION = 'PRESION',
   ENERGIA = 'ENERGIA',
-  OTRO = 'OTRO',
+  OTRO = 'OTRO'
 }
 
 @Entity({ name: 'unidades_medida' })
 @Index(['codigo'], { unique: true })
 @Index(['simbolo'], { unique: true })
-export class UnidadMedida {
+export class UnidadMedida extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -53,7 +51,7 @@ export class UnidadMedida {
   @Column({
     type: 'enum',
     enum: TipoUnidadMedida,
-    default: TipoUnidadMedida.CANTIDAD,
+    default: TipoUnidadMedida.CANTIDAD
   })
   tipo: TipoUnidadMedida;
 
@@ -94,13 +92,4 @@ export class UnidadMedida {
    */
   @Column({ type: 'int', default: 2 })
   decimales: number;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp', nullable: true })
-  deletedAt?: Date;
 }

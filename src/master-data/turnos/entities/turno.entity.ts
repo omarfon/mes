@@ -1,16 +1,14 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 @Entity({ name: 'turnos' })
 @Index(['codigo'], { unique: true })
-export class Turno {
+export class Turno extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -68,13 +66,4 @@ export class Turno {
    */
   @Column({ type: 'varchar', length: 7, nullable: true })
   color?: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp', nullable: true })
-  deletedAt?: Date;
 }

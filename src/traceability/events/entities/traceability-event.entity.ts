@@ -1,9 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 export enum EventType {
@@ -19,20 +19,20 @@ export enum EventType {
   LOCATION_CHANGED = 'LOCATION_CHANGED',
   GENEALOGY_CREATED = 'GENEALOGY_CREATED',
   QUALITY_CHECK = 'QUALITY_CHECK',
-  OTHER = 'OTHER',
+  OTHER = 'OTHER'
 }
 
 @Entity('traceability_events')
 @Index(['entityType', 'entityId'])
 @Index(['eventType'])
 @Index(['timestamp'])
-export class TraceabilityEvent {
+export class TraceabilityEvent extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({
     type: 'enum',
-    enum: EventType,
+    enum: EventType
   })
   eventType: EventType;
 
@@ -60,6 +60,6 @@ export class TraceabilityEvent {
   @Column({ name: 'user_agent', nullable: true })
   userAgent: string;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   timestamp: Date;
 }

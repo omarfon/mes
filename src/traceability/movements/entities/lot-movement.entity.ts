@@ -1,12 +1,12 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 // src/traceability/movements/entities/lot-movement.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   Index,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 import { Lot } from '../../lots/entities/lot.entity';
 
@@ -16,13 +16,13 @@ export enum MovementType {
   ADJUST = 'ADJUST',
   SCRAP = 'SCRAP',
   RECEIPT = 'RECEIPT',
-  PRODUCTION = 'PRODUCTION',
+  PRODUCTION = 'PRODUCTION'
 }
 
 @Entity('lot_movements')
 @Index(['lotId', 'at'])
 @Index(['lotCode'])
-export class LotMovement {
+export class LotMovement extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -38,7 +38,7 @@ export class LotMovement {
 
   @Column({
     type: 'enum',
-    enum: MovementType,
+    enum: MovementType
   })
   type: MovementType;
 
@@ -77,7 +77,4 @@ export class LotMovement {
 
   @Column({ name: 'movement_date', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   at: Date;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
 }

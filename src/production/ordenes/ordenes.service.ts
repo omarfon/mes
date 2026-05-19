@@ -238,7 +238,7 @@ export class OrdenesService {
       throw new NotFoundException(`Orden con id ${id} no encontrada`);
     }
 
-    if (!orden.deletedAt) {
+    if (!orden.fechaEliminacion) {
       throw new ConflictException(`La orden ${orden.numeroOrden} no está eliminada`);
     }
 

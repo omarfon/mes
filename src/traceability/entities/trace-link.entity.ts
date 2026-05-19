@@ -1,10 +1,10 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
+  JoinColumn
 } from 'typeorm';
 import { TraceNode } from './trace-node.entity';
 
@@ -18,7 +18,7 @@ export enum TraceLinkType {
 }
 
 @Entity({ name: 'trace_links' })
-export class TraceLink {
+export class TraceLink extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -39,7 +39,7 @@ export class TraceLink {
   @Column({
     type: 'enum',
     enum: TraceLinkType,
-    default: TraceLinkType.TRANSFORMATION,
+    default: TraceLinkType.TRANSFORMATION
   })
   type: TraceLinkType;
 
@@ -58,7 +58,4 @@ export class TraceLink {
 
   @Column({ name: 'process_ref_type', type: 'varchar', length: 50, nullable: true })
   processRefType?: string | null; // ej: 'PO_OPERATION'
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
 }

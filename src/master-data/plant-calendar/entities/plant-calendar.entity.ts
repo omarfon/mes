@@ -1,23 +1,21 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 
 export enum CalendarEventType {
   HOLIDAY = 'HOLIDAY',
   PLANNED_STOP = 'PLANNED_STOP',
   EXTRA_SHIFT = 'EXTRA_SHIFT',
-  MAINTENANCE_WINDOW = 'MAINTENANCE_WINDOW',
+  MAINTENANCE_WINDOW = 'MAINTENANCE_WINDOW'
 }
 
 @Entity({ name: 'plant_calendar' })
-export class PlantCalendar {
+export class PlantCalendar extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -32,7 +30,7 @@ export class PlantCalendar {
    */
   @Column({
     type: 'enum',
-    enum: CalendarEventType,
+    enum: CalendarEventType
   })
   type!: CalendarEventType;
 
@@ -59,13 +57,4 @@ export class PlantCalendar {
    */
   @Column({ type: 'text', default: '' })
   notes!: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date;
 }

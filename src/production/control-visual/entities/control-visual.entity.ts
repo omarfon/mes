@@ -1,10 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 // src/production/control-visual/entities/control-visual.entity.ts
 import { 
   Entity, 
   PrimaryGeneratedColumn, 
   Column, 
-  CreateDateColumn, 
-  UpdateDateColumn, 
   Index,
   ManyToOne,
   JoinColumn
@@ -16,7 +15,7 @@ export enum EstadoVisual {
   NORMAL = 'NORMAL',
   ADVERTENCIA = 'ADVERTENCIA',
   CRITICO = 'CRITICO',
-  DETENIDO = 'DETENIDO',
+  DETENIDO = 'DETENIDO'
 }
 
 export enum TipoAlerta {
@@ -25,11 +24,11 @@ export enum TipoAlerta {
   MANTENIMIENTO = 'MANTENIMIENTO',
   MATERIAL = 'MATERIAL',
   SEGURIDAD = 'SEGURIDAD',
-  OTRO = 'OTRO',
+  OTRO = 'OTRO'
 }
 
 @Entity({ name: 'control_visual' })
-export class ControlVisual {
+export class ControlVisual extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -100,10 +99,4 @@ export class ControlVisual {
 
   @Column({ type: 'boolean', name: 'is_active', default: true })
   isActive: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

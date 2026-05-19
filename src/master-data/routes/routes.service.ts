@@ -86,7 +86,7 @@ export class RoutesService {
       where,
       skip: (page - 1) * limit,
       take: limit,
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
       // operations ya vienen por eager: true en la entity
     });
 

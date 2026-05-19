@@ -1,13 +1,11 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 import { Product } from '../../master-data/products/entities/product.entity';
 import { ProductionOrder } from '../../production-orders/entities/production-order.entity';
@@ -23,7 +21,7 @@ export enum TraceNodeType {
 
 @Entity({ name: 'trace_nodes' })
 @Index(['code'], { unique: true })
-export class TraceNode {
+export class TraceNode extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -39,7 +37,7 @@ export class TraceNode {
    */
   @Column({
     type: 'enum',
-    enum: TraceNodeType,
+    enum: TraceNodeType
   })
   type: TraceNodeType;
 
@@ -96,13 +94,4 @@ export class TraceNode {
 
   @Column({ type: 'text', nullable: true })
   notes?: string | null;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date | null;
 }

@@ -1,9 +1,8 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
+  Column
 } from 'typeorm';
 
 export enum AssetStatusEnum {
@@ -11,11 +10,11 @@ export enum AssetStatusEnum {
   STOPPED = 'STOPPED',
   FAULT = 'FAULT',
   IDLE = 'IDLE',
-  MAINTENANCE = 'MAINTENANCE',
+  MAINTENANCE = 'MAINTENANCE'
 }
 
 @Entity('asset_status')
-export class AssetStatus {
+export class AssetStatus extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -31,7 +30,7 @@ export class AssetStatus {
   @Column({
     type: 'enum',
     enum: AssetStatusEnum,
-    default: AssetStatusEnum.IDLE,
+    default: AssetStatusEnum.IDLE
   })
   status: AssetStatusEnum;
 
@@ -73,10 +72,4 @@ export class AssetStatus {
 
   @Column({ type: 'jsonb', nullable: true })
   metadata: any;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

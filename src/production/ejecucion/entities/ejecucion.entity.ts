@@ -1,9 +1,8 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import { 
   Entity, 
   PrimaryGeneratedColumn, 
   Column, 
-  CreateDateColumn, 
-  UpdateDateColumn, 
   Index,
   ManyToOne,
   JoinColumn
@@ -16,11 +15,11 @@ export enum EstadoEjecucion {
   EN_PROCESO = 'EN_PROCESO',
   PAUSADA = 'PAUSADA',
   COMPLETADA = 'COMPLETADA',
-  DETENIDA = 'DETENIDA',
+  DETENIDA = 'DETENIDA'
 }
 
 @Entity({ name: 'ejecuciones' })
-export class Ejecucion {
+export class Ejecucion extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -67,10 +66,4 @@ export class Ejecucion {
 
   @Column({ type: 'text', nullable: true })
   observaciones: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

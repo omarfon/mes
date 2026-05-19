@@ -1,12 +1,11 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
-  OneToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
+  OneToMany
 } from 'typeorm';
 import { TraceNode } from '../../traceability/entities/trace-node.entity';
 import { InspectionDefect } from './inspection-defect.entity';
@@ -17,18 +16,18 @@ export enum InspectionType {
   IN_PROCESS = 'IN_PROCESS',
   FINISHED_GOOD = 'FINISHED_GOOD',
   SERIAL_ITEM = 'SERIAL_ITEM',
-  CONTAINER = 'CONTAINER',
+  CONTAINER = 'CONTAINER'
 }
 
 export enum InspectionStatus {
   PASSED = 'PASSED',
   FAILED = 'FAILED',
   REWORK = 'REWORK',
-  PENDING = 'PENDING',
+  PENDING = 'PENDING'
 }
 
 @Entity({ name: 'quality_inspections' })
-export class QualityInspection {
+export class QualityInspection extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -45,7 +44,7 @@ export class QualityInspection {
   @Column({
     type: 'enum',
     enum: InspectionStatus,
-    default: InspectionStatus.PENDING,
+    default: InspectionStatus.PENDING
   })
   status: InspectionStatus;
 
@@ -64,10 +63,4 @@ export class QualityInspection {
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'inspector_id' })
   inspector?: User;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

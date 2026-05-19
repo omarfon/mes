@@ -1,24 +1,22 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   Index,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 
 export enum LocationType {
   WAREHOUSE = 'WAREHOUSE',
   LINE = 'LINE',
-  STATION = 'STATION',
+  STATION = 'STATION'
 }
 
 @Entity({ name: 'locations' })
 @Index(['code'], { unique: true })
-export class Location {
+export class Location extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -40,7 +38,7 @@ export class Location {
   @Column({
     type: 'enum',
     enum: LocationType,
-    default: LocationType.WAREHOUSE,
+    default: LocationType.WAREHOUSE
   })
   type!: LocationType;
 
@@ -62,13 +60,4 @@ export class Location {
    */
   @Column({ type: 'boolean', default: true })
   active!: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date;
 }

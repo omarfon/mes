@@ -50,13 +50,13 @@ export class LotsService {
           { externalCode: Like(`%${filters.search}%`) },
           { productCode: Like(`%${filters.search}%`) },
         ],
-        order: { createdAt: 'DESC' },
+        order: { fechaCreacion: 'DESC' },
       });
     }
 
     return await this.lotRepository.find({
       where,
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
     });
   }
 

@@ -1,21 +1,21 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
+  JoinColumn
 } from 'typeorm';
 import { LabelTemplate } from './label-template.entity';
 
 export enum PrintStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
-  PENDING = 'PENDING',
+  PENDING = 'PENDING'
 }
 
 @Entity('label_print_history')
-export class LabelPrintHistory {
+export class LabelPrintHistory extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -34,7 +34,7 @@ export class LabelPrintHistory {
   @Column({
     type: 'enum',
     enum: PrintStatus,
-    default: PrintStatus.PENDING,
+    default: PrintStatus.PENDING
   })
   status: PrintStatus;
 
@@ -49,9 +49,6 @@ export class LabelPrintHistory {
 
   @Column({ type: 'jsonb', nullable: true })
   printData: any;
-
-  @CreateDateColumn({ name: 'printed_at' })
-  printedAt: Date;
 
   // Relaciones
   @ManyToOne(() => LabelTemplate)

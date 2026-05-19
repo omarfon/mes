@@ -1,17 +1,17 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
-    CreateDateColumn,
     ManyToOne,
     JoinColumn,
-    Index,
+    Index
 } from 'typeorm';
 import { Machine } from '../../master-data/machines/entities/machines.entity';
 
 @Entity({ name: 'machine_events' })
 @Index(['machineId', 'timestamp']) // Índice para búsquedas rápidas por tiempo
-export class MachineEvent {
+export class MachineEvent extends AuditableEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -43,6 +43,6 @@ export class MachineEvent {
     /**
      * Fecha y hora exacta del evento
      */
-    @CreateDateColumn({ name: 'timestamp' })
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     timestamp: Date;
 }

@@ -1,13 +1,11 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   Index,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
   ManyToOne,
-  JoinColumn,
+  JoinColumn
 } from 'typeorm';
 import { Plant } from '../../plants/entities/plant.entity';
 
@@ -20,12 +18,12 @@ export enum AreaType {
   QUALITY = 'QUALITY',
   WAREHOUSE = 'WAREHOUSE',
   MAINTENANCE = 'MAINTENANCE',
-  OTHER = 'OTHER',
+  OTHER = 'OTHER'
 }
 
 @Entity({ name: 'areas' })
 @Index(['code'], { unique: true })
-export class Area {
+export class Area extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -60,7 +58,7 @@ export class Area {
   @Column({
     type: 'enum',
     enum: AreaType,
-    default: AreaType.SPINNING,
+    default: AreaType.SPINNING
   })
   type!: AreaType;
 
@@ -75,13 +73,4 @@ export class Area {
    */
   @Column({ type: 'boolean', default: true })
   active!: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt?: Date;
 }

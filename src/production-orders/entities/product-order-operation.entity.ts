@@ -1,11 +1,10 @@
+import { AuditableEntity } from '../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
+  JoinColumn
 } from 'typeorm';
 import { ProductionOrder } from './production-order.entity';
 import { Machine } from 'src/master-data/machines/entities/machines.entity';
@@ -19,11 +18,11 @@ export enum ProductionOrderOperationStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   PAUSED = 'PAUSED',
   COMPLETED = 'COMPLETED',
-  SKIPPED = 'SKIPPED',
+  SKIPPED = 'SKIPPED'
 }
 
 @Entity({ name: 'production_order_operations' })
-export class ProductionOrderOperation {
+export class ProductionOrderOperation extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -94,7 +93,7 @@ export class ProductionOrderOperation {
   @Column({
     type: 'enum',
     enum: ProductionOrderOperationStatus,
-    default: ProductionOrderOperationStatus.PENDING,
+    default: ProductionOrderOperationStatus.PENDING
   })
   status: ProductionOrderOperationStatus;
 
@@ -118,10 +117,4 @@ export class ProductionOrderOperation {
 
   @Column({ type: 'text', nullable: true })
   notes?: string | null;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

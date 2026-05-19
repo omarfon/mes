@@ -1,13 +1,12 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
+  Column
 } from 'typeorm';
 
 @Entity('quality_defect_families')
-export class DefectFamily {
+export class DefectFamily extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -25,10 +24,4 @@ export class DefectFamily {
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

@@ -22,6 +22,8 @@ import { ActivityLogModule } from './activity-log/activity-log.module';
 import { AssetsStatusModule } from './assets-status/assets-status.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
 import { RulesEngineModule } from './rules-engine/rules-engine.module';
+import { FeasibilityModule } from './feasibility/feasibility.module';
+import { CommonModule } from './common/common.module';
 import databaseConfig from './config/database-config';
 
 @Module({
@@ -30,7 +32,7 @@ import databaseConfig from './config/database-config';
       isGlobal: true,
       load: [databaseConfig],
     }),
-    
+    CommonModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory:  (config: ConfigService) :
@@ -65,6 +67,7 @@ import databaseConfig from './config/database-config';
         ActivityLogModule, 
         AssetsStatusModule,
         RulesEngineModule,
+        FeasibilityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

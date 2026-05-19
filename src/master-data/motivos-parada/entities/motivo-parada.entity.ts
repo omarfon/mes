@@ -1,11 +1,9 @@
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  Index,
+  Index
 } from 'typeorm';
 
 export enum CategoriaParada {
@@ -16,18 +14,18 @@ export enum CategoriaParada {
   CALIDAD = 'CALIDAD',
   MATERIALES = 'MATERIALES',
   PERSONAL = 'PERSONAL',
-  OTROS = 'OTROS',
+  OTROS = 'OTROS'
 }
 
 export enum TipoParada {
   CORTA = 'CORTA',
   MEDIA = 'MEDIA',
-  LARGA = 'LARGA',
+  LARGA = 'LARGA'
 }
 
 @Entity({ name: 'motivos_parada' })
 @Index(['codigo'], { unique: true })
-export class MotivoParada {
+export class MotivoParada extends AuditableEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -55,7 +53,7 @@ export class MotivoParada {
   @Column({
     type: 'enum',
     enum: CategoriaParada,
-    default: CategoriaParada.NO_PLANIFICADA,
+    default: CategoriaParada.NO_PLANIFICADA
   })
   categoria: CategoriaParada;
 
@@ -65,7 +63,7 @@ export class MotivoParada {
   @Column({
     type: 'enum',
     enum: TipoParada,
-    nullable: true,
+    nullable: true
   })
   tipo?: TipoParada;
 
@@ -140,13 +138,4 @@ export class MotivoParada {
    */
   @Column({ type: 'uuid', nullable: true })
   motivoPadreId?: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp', nullable: true })
-  deletedAt?: Date;
 }
