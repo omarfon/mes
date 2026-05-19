@@ -44,7 +44,16 @@ export class WorkstationsController {
     return this.workstationsService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH workstations/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateWorkstationDto,
+  ) {
+    return this.workstationsService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.workstationsService.remove(id);

@@ -44,7 +44,16 @@ export class LocationsController {
     return this.locationsService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH locations/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateLocationDto,
+  ) {
+    return this.locationsService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.locationsService.remove(id);

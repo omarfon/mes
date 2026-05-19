@@ -57,6 +57,17 @@ export class PlantsController {
   }
 
   /**
+   * PATCH plants/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdatePlantDto,
+  ) {
+    return this.plantsService.update(id, dto);
+  }
+
+  /**
    * DELETE /master-data/plants/:id
    */
   @Delete(':id')

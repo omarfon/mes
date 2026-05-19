@@ -10,6 +10,11 @@ import {
   UpdateEmpresaDto,
   EmpresaFilters,
 } from '../models/empresa.model';
+import { AuditService } from './audit.service';
+import { AuditRecord } from '../models/audit.model';
+
+/** Nombre de entidad tal como lo registra el backend en la tabla audits */
+const ENTITY_TYPE = 'Empresa';
 
 export interface PaginatedEmpresas {
   data: Empresa[];
@@ -23,6 +28,7 @@ export interface PaginatedEmpresas {
 })
 export class EmpresasService {
   private http = inject(HttpClient);
+  private auditService = inject(AuditService);
   private apiUrl = `${environment.apiUrl}/master-data/empresas`;
 
   /** Lista reactiva para selectores (estudio de factibilidad, etc.) */
@@ -75,5 +81,14 @@ export class EmpresasService {
 
   remove(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // ─── Auditoría ──────────────────────────────────────────────────────────────
+  /**
+   * Carga el historial de auditoría para una empresa específica.
+   * Delega en AuditService que gestiona el estado reactivo.
+   */
+  cargarAuditoria(id: string): Observable<AuditRecord[]> {
+    return this.auditService.cargarHistorialEntidad(ENTITY_TYPE, id);
   }
 }

@@ -44,7 +44,16 @@ export class RecipesController {
     return this.recipesService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH recipes/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateRecipeDto,
+  ) {
+    return this.recipesService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.recipesService.remove(id);

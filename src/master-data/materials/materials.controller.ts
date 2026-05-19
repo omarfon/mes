@@ -44,7 +44,16 @@ export class MaterialsController {
     return this.materialsService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH materials/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateMaterialDto,
+  ) {
+    return this.materialsService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.materialsService.remove(id);

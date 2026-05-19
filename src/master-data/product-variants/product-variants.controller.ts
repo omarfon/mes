@@ -44,7 +44,16 @@ export class ProductVariantsController {
     return this.variantsService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH product-variants/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateProductVariantDto,
+  ) {
+    return this.variantsService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.variantsService.remove(id);

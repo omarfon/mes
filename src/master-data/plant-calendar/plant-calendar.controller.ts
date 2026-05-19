@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -43,7 +44,16 @@ export class PlantCalendarController {
     return this.calendarService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH plant-calendar/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdatePlantCalendarDto,
+  ) {
+    return this.calendarService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.calendarService.remove(id);

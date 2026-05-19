@@ -44,7 +44,16 @@ export class OrderTypesController {
     return this.orderTypesService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH order-types/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateOrderTypeDto,
+  ) {
+    return this.orderTypesService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.orderTypesService.remove(id);

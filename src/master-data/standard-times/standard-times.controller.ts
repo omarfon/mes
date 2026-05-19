@@ -44,7 +44,16 @@ export class StandardTimesController {
     return this.standardTimesService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH standard-times/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateStandardTimeDto,
+  ) {
+    return this.standardTimesService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.standardTimesService.remove(id);

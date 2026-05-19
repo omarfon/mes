@@ -57,6 +57,18 @@ export class AreasController {
   }
 
   /**
+   * PATCH areas/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateAreaDto,
+  ) {
+    return this.areasService.update(id, dto);
+  }
+
+
+  /**
    * DELETE /master-data/areas/:id
    */
   @Delete(':id')

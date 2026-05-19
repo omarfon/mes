@@ -44,7 +44,16 @@ export class SuppliersController {
     return this.suppliersService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH suppliers/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateSupplierDto,
+  ) {
+    return this.suppliersService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.suppliersService.remove(id);

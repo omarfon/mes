@@ -44,7 +44,16 @@ export class ScrapReasonsController {
     return this.scrapReasonsService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH scrap-reasons/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateScrapReasonDto,
+  ) {
+    return this.scrapReasonsService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.scrapReasonsService.remove(id);

@@ -44,7 +44,16 @@ export class BillOfMaterialsController {
     return this.billOfMaterialsService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH bill-of-materials/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateBillOfMaterialDto,
+  ) {
+    return this.billOfMaterialsService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.billOfMaterialsService.remove(id);

@@ -44,7 +44,16 @@ export class RoutingsController {
     return this.routingsService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH routings/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateRoutingDto,
+  ) {
+    return this.routingsService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.routingsService.remove(id);

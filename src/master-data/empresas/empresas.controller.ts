@@ -50,7 +50,16 @@ export class EmpresasController {
     return this.empresasService.update(id, dto);
   }
 
-  @Delete(':id')
+  /**
+   * PATCH empresas/:id
+   */
+  @Patch(':id')
+  async patch(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateEmpresaDto,
+  ) {
+    return this.empresasService.update(id, dto);
+  }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.empresasService.remove(id);
