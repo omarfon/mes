@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   NotFoundException,
   ConflictException,
@@ -10,17 +10,24 @@ import { CreateOperadorDto } from './dto/create-operador.dto';
 import { UpdateOperadorDto } from './dto/update-operador.dto';
 import { FilterOperadorDto } from './dto/filter-operador.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Operator';
+const MODULE = 'master-data';
+
 @Injectable()
 export class OperadoresService {
   constructor(
     @InjectRepository(Operador)
     private readonly operadoresRepo: Repository<Operador>,
+    private readonly auditsService: AuditsService,
   ) {}
 
   /**
    * Crear un nuevo operador
    */
-  async create(dto: CreateOperadorDto): Promise<Operador> {
+  async create(dto: CreateOperadorDto, userId?: string, ip?: string): Promise<Operador> {
     // Verificar que no exista un operador con el mismo código
     const existingCodigo = await this.operadoresRepo.findOne({
       where: { codigo: dto.codigo },
@@ -44,7 +51,9 @@ export class OperadoresService {
     }
 
     const operador = this.operadoresRepo.create(dto);
-    return this.operadoresRepo.save(operador);
+    const saved = await this.operadoresRepo.save(operador);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Operator creado`, ipAddress: ip });
+    return saved;
   }
 
   /**
@@ -162,8 +171,9 @@ export class OperadoresService {
   /**
    * Actualizar un operador
    */
-  async update(id: string, dto: UpdateOperadorDto): Promise<Operador> {
+  async update(id: string, dto: UpdateOperadorDto, userId?: string, ip?: string): Promise<Operador> {
     const operador = await this.findOne(id);
+    const oldValues = { ...operador };
 
     // Si se está cambiando el código, verificar que no exista otro con ese código
     if (dto.codigo && dto.codigo !== operador.codigo) {
@@ -190,15 +200,18 @@ export class OperadoresService {
     }
 
     Object.assign(operador, dto);
-    return this.operadoresRepo.save(operador);
+    const updated = await this.operadoresRepo.save(operador);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Operator actualizado`, ipAddress: ip });
+    return updated;
   }
 
   /**
    * Soft delete de un operador
    */
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const operador = await this.findOne(id);
     await this.operadoresRepo.softDelete(operador.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: operador, module: MODULE, description: `Operator eliminado`, ipAddress: ip });
   }
 
   /**

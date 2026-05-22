@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
@@ -22,8 +23,8 @@ export class LocationsController {
   constructor(private readonly locationsService: LocationsService) {}
 
   @Post()
-  async create(@Body() dto: CreateLocationDto) {
-    return this.locationsService.create(dto);
+  async create(@Body() dto: CreateLocationDto, @Request() req) {
+    return this.locationsService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class LocationsController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateLocationDto,
+    @Request() req,
   ) {
-    return this.locationsService.update(id, dto);
+    return this.locationsService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,12 +53,13 @@ export class LocationsController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateLocationDto,
+    @Request() req,
   ) {
-    return this.locationsService.update(id, dto);
+    return this.locationsService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.locationsService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.locationsService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')

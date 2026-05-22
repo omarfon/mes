@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateWorkCenterDto } from './dto/create-work-center.dto';
 import { FilterWorkCentersDto } from './dto/filter-work-center.dto';
@@ -21,8 +22,8 @@ export class WorkCentersController {
   constructor(private readonly workCentersService: WorkCentersService) {}
 
   @Post()
-  async create(@Body() dto: CreateWorkCenterDto) {
-    return this.workCentersService.create(dto);
+  async create(@Body() dto: CreateWorkCenterDto, @Request() req) {
+    return this.workCentersService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -39,8 +40,9 @@ export class WorkCentersController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateWorkCenterDto,
+    @Request() req,
   ) {
-    return this.workCentersService.update(id, dto);
+    return this.workCentersService.update(id, dto, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')
@@ -53,7 +55,7 @@ export class WorkCentersController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    await this.workCentersService.softDelete(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req): Promise<void> {
+    await this.workCentersService.softDelete(id, req.user?.userId, req.ip);
   }
 }

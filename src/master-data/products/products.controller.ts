@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductsDto } from './dto/filter-product.dto';
@@ -26,8 +27,8 @@ export class ProductsController {
    * POST /products
    */
   @Post()
-  async create(@Body() dto: CreateProductDto) {
-    return this.productsService.create(dto);
+  async create(@Body() dto: CreateProductDto, @Request() req) {
+    return this.productsService.create(dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -56,8 +57,9 @@ export class ProductsController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateProductDto,
+    @Request() req,
   ) {
-    return this.productsService.update(id, dto);
+    return this.productsService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -78,7 +80,7 @@ export class ProductsController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    await this.productsService.softDelete(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req): Promise<void> {
+    await this.productsService.softDelete(id, req.user?.userId, req.ip);
   }
 }

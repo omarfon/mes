@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateEmpresaDto } from './dto/create-empresa.dto';
 import { UpdateEmpresaDto } from './dto/update-empresa.dto';
 import { FilterEmpresaDto } from './dto/filter-empresa.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Empresa';
+const MODULE = 'master-data';
+
 @Injectable()
 export class EmpresasService {
   constructor(
     @InjectRepository(Empresa)
     private readonly empresasRepo: Repository<Empresa>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateEmpresaDto): Promise<Empresa> {
+  async create(dto: CreateEmpresaDto, userId?: string, ip?: string): Promise<Empresa> {
     const existing = await this.empresasRepo.findOne({
       where: { ruc: dto.ruc },
       withDeleted: true,
@@ -36,7 +43,9 @@ export class EmpresasService {
       active: dto.active ?? true,
     });
 
-    return this.empresasRepo.save(empresa);
+    const saved = await this.empresasRepo.save(empresa);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Empresa creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterEmpresaDto) {
@@ -89,8 +98,9 @@ export class EmpresasService {
     return empresa;
   }
 
-  async update(id: string, dto: UpdateEmpresaDto): Promise<Empresa> {
+  async update(id: string, dto: UpdateEmpresaDto, userId?: string, ip?: string): Promise<Empresa> {
     const empresa = await this.findOne(id);
+    const oldValues = { ...empresa };
 
     if (dto.ruc && dto.ruc !== empresa.ruc) {
       const exists = await this.empresasRepo.findOne({
@@ -104,12 +114,15 @@ export class EmpresasService {
 
     Object.assign(empresa, dto);
 
-    return this.empresasRepo.save(empresa);
+    const updated = await this.empresasRepo.save(empresa);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Empresa actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const empresa = await this.findOne(id);
     await this.empresasRepo.softDelete(empresa.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: empresa, module: MODULE, description: `Empresa eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<Empresa> {

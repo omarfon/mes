@@ -68,7 +68,16 @@ export class User extends AuditableEntity {
   operatorId?: string | null;
 
   /**
-   * Campos de auditoría
+   * Token para recuperación de contraseña (se limpia tras usarse o expirar)
    */
+  @Column({ type: 'varchar', length: 255, nullable: true, default: null })
+  resetPasswordToken: string | null;
+
+  /**
+   * Fecha de expiración del token de recuperación (1 hora por defecto)
+   */
+  @Column({ type: 'timestamptz', nullable: true, default: null })
+  resetPasswordExpires: Date | null;
+
   username: any;
 }

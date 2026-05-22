@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   NotFoundException,
   ConflictException,
@@ -11,17 +11,24 @@ import { CreateUnidadMedidaDto } from './dto/create-unidad-medida.dto';
 import { UpdateUnidadMedidaDto } from './dto/update-unidad-medida.dto';
 import { FilterUnidadMedidaDto } from './dto/filter-unidad-medida.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'UnidadMedida';
+const MODULE = 'master-data';
+
 @Injectable()
 export class UnidadesMedidaService {
   constructor(
     @InjectRepository(UnidadMedida)
     private readonly unidadesRepo: Repository<UnidadMedida>,
+    private readonly auditsService: AuditsService,
   ) {}
 
   /**
    * Crear una nueva unidad de medida
    */
-  async create(dto: CreateUnidadMedidaDto): Promise<UnidadMedida> {
+  async create(dto: CreateUnidadMedidaDto, userId?: string, ip?: string): Promise<UnidadMedida> {
     // Verificar que no exista una unidad con el mismo código
     const existingCodigo = await this.unidadesRepo.findOne({
       where: { codigo: dto.codigo },
@@ -54,7 +61,9 @@ export class UnidadesMedidaService {
     }
 
     const unidad = this.unidadesRepo.create(dto);
-    return this.unidadesRepo.save(unidad);
+    const saved = await this.unidadesRepo.save(unidad);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `UnidadMedida creado`, ipAddress: ip });
+    return saved;
   }
 
   /**
@@ -150,8 +159,9 @@ export class UnidadesMedidaService {
   /**
    * Actualizar una unidad de medida
    */
-  async update(id: string, dto: UpdateUnidadMedidaDto): Promise<UnidadMedida> {
+  async update(id: string, dto: UpdateUnidadMedidaDto, userId?: string, ip?: string): Promise<UnidadMedida> {
     const unidad = await this.findOne(id);
+    const oldValues = { ...unidad };
 
     // Si se está cambiando el código, verificar que no exista otro con ese código
     if (dto.codigo && dto.codigo !== unidad.codigo) {
@@ -189,15 +199,18 @@ export class UnidadesMedidaService {
     }
 
     Object.assign(unidad, dto);
-    return this.unidadesRepo.save(unidad);
+    const updated = await this.unidadesRepo.save(unidad);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `UnidadMedida actualizado`, ipAddress: ip });
+    return updated;
   }
 
   /**
    * Soft delete de una unidad de medida
    */
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const unidad = await this.findOne(id);
     await this.unidadesRepo.softDelete(unidad.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: unidad, module: MODULE, description: `UnidadMedida eliminado`, ipAddress: ip });
   }
 
   /**

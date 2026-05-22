@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateShiftDto } from './dto/create-schift.dto';
 import { FilterShiftsDto } from './dto/filter-schift.dto';
@@ -26,8 +27,8 @@ export class ShiftsController {
    * POST /shifts
    */
   @Post()
-  async create(@Body() dto: CreateShiftDto) {
-    return this.shiftsService.create(dto);
+  async create(@Body() dto: CreateShiftDto, @Request() req) {
+    return this.shiftsService.create(dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -56,8 +57,9 @@ export class ShiftsController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateShiftDto,
+    @Request() req,
   ) {
-    return this.shiftsService.update(id, dto);
+    return this.shiftsService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -78,7 +80,7 @@ export class ShiftsController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    await this.shiftsService.softDelete(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req): Promise<void> {
+    await this.shiftsService.softDelete(id, req.user?.userId, req.ip);
   }
 }

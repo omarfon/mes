@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { UpdatePlantDto } from './dto/update-plant.dto';
@@ -25,8 +26,10 @@ export class PlantsController {
    * POST /master-data/plants
    */
   @Post()
-  async create(@Body() dto: CreatePlantDto) {
-    return this.plantsService.create(dto);
+  async create(@Body() dto: CreatePlantDto, @Request() req) {
+    const userId = req.user?.userId;
+    const ip = req.ip;
+    return this.plantsService.create(dto, userId, ip);
   }
 
   /**
@@ -52,8 +55,11 @@ export class PlantsController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdatePlantDto,
+    @Request() req,
   ) {
-    return this.plantsService.update(id, dto);
+    const userId = req.user?.userId;
+    const ip = req.ip;
+    return this.plantsService.update(id, dto, userId, ip);
   }
 
   /**
@@ -63,8 +69,11 @@ export class PlantsController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdatePlantDto,
+    @Request() req,
   ) {
-    return this.plantsService.update(id, dto);
+    const userId = req.user?.userId;
+    const ip = req.ip;
+    return this.plantsService.update(id, dto, userId, ip);
   }
 
   /**
@@ -72,8 +81,10 @@ export class PlantsController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.plantsService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    const userId = req.user?.userId;
+    const ip = req.ip;
+    await this.plantsService.remove(id, userId, ip);
   }
 
   /**

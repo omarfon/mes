@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreatePlantCalendarDto } from './dto/create-plant-calendar.dto';
 import { UpdatePlantCalendarDto } from './dto/update-plant-calendar.dto';
@@ -22,8 +23,8 @@ export class PlantCalendarController {
   constructor(private readonly calendarService: PlantCalendarService) {}
 
   @Post()
-  async create(@Body() dto: CreatePlantCalendarDto) {
-    return this.calendarService.create(dto);
+  async create(@Body() dto: CreatePlantCalendarDto, @Request() req) {
+    return this.calendarService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class PlantCalendarController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdatePlantCalendarDto,
+    @Request() req,
   ) {
-    return this.calendarService.update(id, dto);
+    return this.calendarService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,11 +53,12 @@ export class PlantCalendarController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdatePlantCalendarDto,
+    @Request() req,
   ) {
-    return this.calendarService.update(id, dto);
+    return this.calendarService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.calendarService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.calendarService.remove(id, req.user?.userId, req.ip);
   }
 }

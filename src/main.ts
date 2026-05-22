@@ -38,8 +38,8 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
+      whitelist: true,          // elimina propiedades no declaradas en el DTO
+      forbidNonWhitelisted: false, // no rechaza con 422; solo descarta campos extra
       transform: true,
       transformOptions: {
         enableImplicitConversion: true,

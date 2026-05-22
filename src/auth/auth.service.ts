@@ -1,6 +1,7 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 
 import { LoginDto } from './dto/login.dto';
 import { UsersService } from 'src/master-data/users/users.service';
@@ -87,5 +88,39 @@ export class AuthService {
       message: 'Usuario creado correctamente',
       user,
     };
+  }
+
+  async forgotPassword(email: string): Promise<{ message: string; resetToken?: string; expiresIn?: string }> {
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await this.usersService.findByEmail(normalizedEmail);
+
+    // Por seguridad siempre respondemos igual, incluso si el usuario no existe
+    if (!user || !user.isActive) {
+      return { message: 'Si el correo existe, recibirás las instrucciones de recuperación.' };
+    }
+
+    const token = randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+    await this.usersService.setResetToken(user.id, token, expires);
+
+    // MODO DESARROLLO: el token se devuelve en la respuesta en lugar de enviarse por email
+    return {
+      message: '[DEV] Token generado. En producción se enviará por correo.',
+      resetToken: token,
+      expiresIn: '1h',
+    };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    const user = await this.usersService.findByResetToken(token);
+
+    if (!user || !user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
+      throw new BadRequestException('Token inválido o expirado');
+    }
+
+    await this.usersService.updatePassword(user.id, newPassword);
+
+    return { message: 'Contraseña actualizada correctamente' };
   }
 }

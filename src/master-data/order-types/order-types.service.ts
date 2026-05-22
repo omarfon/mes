@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateOrderTypeDto } from './dto/create-order-type.dto';
 import { UpdateOrderTypeDto } from './dto/update-order-type.dto';
 import { FilterOrderTypeDto } from './dto/filter-order-type.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'OrderType';
+const MODULE = 'master-data';
+
 @Injectable()
 export class OrderTypesService {
   constructor(
     @InjectRepository(OrderType)
     private readonly orderTypesRepo: Repository<OrderType>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateOrderTypeDto): Promise<OrderType> {
+  async create(dto: CreateOrderTypeDto, userId?: string, ip?: string): Promise<OrderType> {
     const existing = await this.orderTypesRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -39,7 +46,9 @@ export class OrderTypesService {
       active: dto.active ?? true,
     });
 
-    return this.orderTypesRepo.save(orderType);
+    const saved = await this.orderTypesRepo.save(orderType);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `OrderType creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterOrderTypeDto) {
@@ -84,8 +93,9 @@ export class OrderTypesService {
     return orderType;
   }
 
-  async update(id: string, dto: UpdateOrderTypeDto): Promise<OrderType> {
+  async update(id: string, dto: UpdateOrderTypeDto, userId?: string, ip?: string): Promise<OrderType> {
     const orderType = await this.findOne(id);
+    const oldValues = { ...orderType };
 
     if (dto.code && dto.code.toUpperCase() !== orderType.code) {
       const exists = await this.orderTypesRepo.findOne({
@@ -102,12 +112,15 @@ export class OrderTypesService {
       code: dto.code ? dto.code.toUpperCase() : orderType.code,
     });
 
-    return this.orderTypesRepo.save(orderType);
+    const updated = await this.orderTypesRepo.save(orderType);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `OrderType actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const orderType = await this.findOne(id);
     await this.orderTypesRepo.softDelete(orderType.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: orderType, module: MODULE, description: `OrderType eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<OrderType> {

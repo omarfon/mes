@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { EmpresasService } from './empresas.service';
 import { CreateEmpresaDto } from './dto/create-empresa.dto';
@@ -22,8 +23,8 @@ export class EmpresasController {
   constructor(private readonly empresasService: EmpresasService) {}
 
   @Post()
-  async create(@Body() dto: CreateEmpresaDto) {
-    return this.empresasService.create(dto);
+  async create(@Body() dto: CreateEmpresaDto, @Request() req) {
+    return this.empresasService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -46,8 +47,9 @@ export class EmpresasController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateEmpresaDto,
+    @Request() req,
   ) {
-    return this.empresasService.update(id, dto);
+    return this.empresasService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -57,12 +59,13 @@ export class EmpresasController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateEmpresaDto,
+    @Request() req,
   ) {
-    return this.empresasService.update(id, dto);
+    return this.empresasService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.empresasService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.empresasService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')

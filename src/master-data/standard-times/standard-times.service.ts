@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StandardTime } from './entities/standard-time.entity';
@@ -6,14 +6,21 @@ import { CreateStandardTimeDto } from './dto/create-standard-time.dto';
 import { UpdateStandardTimeDto } from './dto/update-standard-time.dto';
 import { FilterStandardTimeDto } from './dto/filter-standard-time.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'StandardTime';
+const MODULE = 'master-data';
+
 @Injectable()
 export class StandardTimesService {
   constructor(
     @InjectRepository(StandardTime)
     private readonly standardTimesRepo: Repository<StandardTime>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateStandardTimeDto): Promise<StandardTime> {
+  async create(dto: CreateStandardTimeDto, userId?: string, ip?: string): Promise<StandardTime> {
     const standardTime = this.standardTimesRepo.create({
       operationCode: dto.operationCode,
       operationName: dto.operationName,
@@ -29,7 +36,9 @@ export class StandardTimesService {
       notes: dto.notes || '',
     });
 
-    return this.standardTimesRepo.save(standardTime);
+    const saved = await this.standardTimesRepo.save(standardTime);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `StandardTime creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterStandardTimeDto) {
@@ -74,8 +83,9 @@ export class StandardTimesService {
     return standardTime;
   }
 
-  async update(id: string, dto: UpdateStandardTimeDto): Promise<StandardTime> {
+  async update(id: string, dto: UpdateStandardTimeDto, userId?: string, ip?: string): Promise<StandardTime> {
     const standardTime = await this.findOne(id);
+    const oldValues = { ...standardTime };
 
     Object.assign(standardTime, {
       ...dto,
@@ -83,12 +93,15 @@ export class StandardTimesService {
       workCenterCode: dto.workCenterCode ? dto.workCenterCode.toUpperCase() : standardTime.workCenterCode,
     });
 
-    return this.standardTimesRepo.save(standardTime);
+    const updated = await this.standardTimesRepo.save(standardTime);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `StandardTime actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const standardTime = await this.findOne(id);
     await this.standardTimesRepo.softDelete(standardTime.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: standardTime, module: MODULE, description: `StandardTime eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<StandardTime> {

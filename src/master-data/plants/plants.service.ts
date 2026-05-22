@@ -9,15 +9,21 @@ import { Plant } from './entities/plant.entity';
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { UpdatePlantDto } from './dto/update-plant.dto';
 import { FilterPlantDto } from './dto/filter-plant.dto';
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Plant';
+const MODULE = 'master-data';
 
 @Injectable()
 export class PlantsService {
   constructor(
     @InjectRepository(Plant)
     private readonly plantsRepo: Repository<Plant>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreatePlantDto): Promise<Plant> {
+  async create(dto: CreatePlantDto, userId?: string, ip?: string): Promise<Plant> {
     const existing = await this.plantsRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -36,7 +42,20 @@ export class PlantsService {
       active: dto.active ?? true,
     });
 
-    return this.plantsRepo.save(plant);
+    const saved = await this.plantsRepo.save(plant);
+
+    await this.auditsService.create({
+      action: AuditAction.CREATE,
+      entityType: ENTITY_TYPE,
+      entityId: saved.id,
+      userId,
+      newValues: saved,
+      module: MODULE,
+      description: `Planta creada: ${saved.name} (${saved.code})`,
+      ipAddress: ip,
+    });
+
+    return saved;
   }
 
   async findAll(filter: FilterPlantDto) {
@@ -77,8 +96,9 @@ export class PlantsService {
     return plant;
   }
 
-  async update(id: string, dto: UpdatePlantDto): Promise<Plant> {
+  async update(id: string, dto: UpdatePlantDto, userId?: string, ip?: string): Promise<Plant> {
     const plant = await this.findOne(id);
+    const oldValues = { ...plant };
 
     if (dto.code && dto.code.toUpperCase() !== plant.code) {
       const exists = await this.plantsRepo.findOne({
@@ -95,12 +115,37 @@ export class PlantsService {
       code: dto.code ? dto.code.toUpperCase() : plant.code,
     });
 
-    return this.plantsRepo.save(plant);
+    const updated = await this.plantsRepo.save(plant);
+
+    await this.auditsService.create({
+      action: AuditAction.UPDATE,
+      entityType: ENTITY_TYPE,
+      entityId: id,
+      userId,
+      oldValues,
+      newValues: updated,
+      module: MODULE,
+      description: `Planta actualizada: ${updated.name} (${updated.code})`,
+      ipAddress: ip,
+    });
+
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const plant = await this.findOne(id);
     await this.plantsRepo.softDelete(plant.id);
+
+    await this.auditsService.create({
+      action: AuditAction.DELETE,
+      entityType: ENTITY_TYPE,
+      entityId: id,
+      userId,
+      oldValues: plant,
+      module: MODULE,
+      description: `Planta eliminada: ${plant.name} (${plant.code})`,
+      ipAddress: ip,
+    });
   }
 
   async toggleActive(id: string, active: boolean): Promise<Plant> {

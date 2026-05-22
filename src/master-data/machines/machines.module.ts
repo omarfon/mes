@@ -10,6 +10,8 @@ import { WorkCentersModule } from '../work-centers/work-centers.module';
 
 
 
+import { AuditsModule } from '../../traceability/audits/audits.module';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Machine, WorkCenter]),

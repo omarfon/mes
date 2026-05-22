@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateWorkstationDto } from './dto/create-workstation.dto';
 import { UpdateWorkstationDto } from './dto/update-workstation.dto';
 import { FilterWorkstationDto } from './dto/filter-workstation.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Workstation';
+const MODULE = 'master-data';
+
 @Injectable()
 export class WorkstationsService {
   constructor(
     @InjectRepository(Workstation)
     private readonly workstationsRepo: Repository<Workstation>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateWorkstationDto): Promise<Workstation> {
+  async create(dto: CreateWorkstationDto, userId?: string, ip?: string): Promise<Workstation> {
     const existing = await this.workstationsRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -37,7 +44,9 @@ export class WorkstationsService {
       active: dto.active ?? true,
     });
 
-    return this.workstationsRepo.save(workstation);
+    const saved = await this.workstationsRepo.save(workstation);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Workstation creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterWorkstationDto) {
@@ -86,8 +95,9 @@ export class WorkstationsService {
     return workstation;
   }
 
-  async update(id: string, dto: UpdateWorkstationDto): Promise<Workstation> {
+  async update(id: string, dto: UpdateWorkstationDto, userId?: string, ip?: string): Promise<Workstation> {
     const workstation = await this.findOne(id);
+    const oldValues = { ...workstation };
 
     if (dto.code && dto.code.toUpperCase() !== workstation.code) {
       const exists = await this.workstationsRepo.findOne({
@@ -105,12 +115,15 @@ export class WorkstationsService {
       workCenterCode: dto.workCenterCode ? dto.workCenterCode.toUpperCase() : workstation.workCenterCode,
     });
 
-    return this.workstationsRepo.save(workstation);
+    const updated = await this.workstationsRepo.save(workstation);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Workstation actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const workstation = await this.findOne(id);
     await this.workstationsRepo.softDelete(workstation.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: workstation, module: MODULE, description: `Workstation eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<Workstation> {

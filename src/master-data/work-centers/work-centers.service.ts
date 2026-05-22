@@ -1,4 +1,4 @@
-import {
+﻿import {
   ConflictException,
   Injectable,
   NotFoundException,
@@ -11,14 +11,21 @@ import { UpdateWorkCenterDto } from './dto/update-work-center.dto';
 import { WorkCenter, WorkCenterType } from './entities/work-center.entity';
 
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'WorkCenter';
+const MODULE = 'master-data';
+
 @Injectable()
 export class WorkCentersService {
   constructor(
     @InjectRepository(WorkCenter)
     private readonly workCentersRepo: Repository<WorkCenter>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateWorkCenterDto): Promise<WorkCenter> {
+  async create(dto: CreateWorkCenterDto, userId?: string, ip?: string): Promise<WorkCenter> {
     const existing = await this.workCentersRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -39,7 +46,9 @@ export class WorkCentersService {
       isActive: dto.isActive ?? true,
     });
 
-    return this.workCentersRepo.save(workCenter);
+    const saved = await this.workCentersRepo.save(workCenter);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `WorkCenter creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterWorkCentersDto) {
@@ -85,8 +94,9 @@ export class WorkCentersService {
     return wc;
   }
 
-  async update(id: string, dto: UpdateWorkCenterDto): Promise<WorkCenter> {
+  async update(id: string, dto: UpdateWorkCenterDto, userId?: string, ip?: string): Promise<WorkCenter> {
     const wc = await this.findOne(id);
+    const oldValues = { ...wc };
 
     if (dto.code && dto.code.toUpperCase() !== wc.code) {
       const exists = await this.workCentersRepo.findOne({
@@ -112,7 +122,9 @@ export class WorkCentersService {
       wc.isActive = dto.isActive;
     }
 
-    return this.workCentersRepo.save(wc);
+    const updated = await this.workCentersRepo.save(wc);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `WorkCenter actualizado`, ipAddress: ip });
+    return updated;
   }
 
   async toggleActive(id: string, isActive: boolean): Promise<WorkCenter> {
@@ -121,7 +133,8 @@ export class WorkCentersService {
     return this.workCentersRepo.save(wc);
   }
 
-  async softDelete(id: string): Promise<void> {
+  async softDelete(id: string, userId?: string, ip?: string): Promise<void> {
     await this.workCentersRepo.softDelete(id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, module: MODULE, description: `WorkCenter eliminado`, ipAddress: ip });
   }
 }

@@ -132,5 +132,27 @@ export class UsersService {
     await this.usersRepo.softDelete(id);
   }
 
-  
+  async setResetToken(userId: string, token: string, expires: Date): Promise<void> {
+    await this.usersRepo.update(userId, {
+      resetPasswordToken: token,
+      resetPasswordExpires: expires,
+    });
+  }
+
+  async findByResetToken(token: string): Promise<User | null> {
+    return this.usersRepo
+      .createQueryBuilder('user')
+      .where('user.resetPasswordToken = :token', { token })
+      .andWhere('user.isActive = true')
+      .getOne();
+  }
+
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await this.usersRepo.update(userId, {
+      passwordHash,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    });
+  }
 }

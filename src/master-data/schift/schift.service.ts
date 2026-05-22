@@ -1,4 +1,4 @@
-import {
+﻿import {
   ConflictException,
   Injectable,
   NotFoundException,
@@ -11,14 +11,21 @@ import { UpdateShiftDto } from './dto/update-schift.dto';
 import { Shift } from './entities/schift.entity';
 
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Turn';
+const MODULE = 'master-data';
+
 @Injectable()
 export class ShiftsService {
   constructor(
     @InjectRepository(Shift)
     private readonly shiftsRepo: Repository<Shift>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateShiftDto): Promise<Shift> {
+  async create(dto: CreateShiftDto, userId?: string, ip?: string): Promise<Shift> {
     const existing = await this.shiftsRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -39,7 +46,9 @@ export class ShiftsService {
       isActive: true,
     });
 
-    return this.shiftsRepo.save(shift);
+    const saved = await this.shiftsRepo.save(shift);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Turn creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterShiftsDto) {
@@ -81,8 +90,9 @@ export class ShiftsService {
     return shift;
   }
 
-  async update(id: string, dto: UpdateShiftDto): Promise<Shift> {
+  async update(id: string, dto: UpdateShiftDto, userId?: string, ip?: string): Promise<Shift> {
     const shift = await this.findOne(id);
+    const oldValues = { ...shift };
 
     if (dto.code && dto.code.toUpperCase() !== shift.code) {
       const exists = await this.shiftsRepo.findOne({
@@ -112,7 +122,9 @@ export class ShiftsService {
       shift.breakMinutes = dto.breakMinutes;
     }
 
-    return this.shiftsRepo.save(shift);
+    const updated = await this.shiftsRepo.save(shift);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Turn actualizado`, ipAddress: ip });
+    return updated;
   }
 
   async toggleActive(id: string, isActive: boolean): Promise<Shift> {
@@ -121,7 +133,8 @@ export class ShiftsService {
     return this.shiftsRepo.save(shift);
   }
 
-  async softDelete(id: string): Promise<void> {
+  async softDelete(id: string, userId?: string, ip?: string): Promise<void> {
     await this.shiftsRepo.softDelete(id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, module: MODULE, description: `Turn eliminado`, ipAddress: ip });
   }
 }

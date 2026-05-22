@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  Request,
 } from '@nestjs/common';
 import { MotivosParadaService } from './motivos-parada.service';
 import { CreateMotivoParadaDto } from './dto/create-motivo-parada.dto';
@@ -30,8 +31,8 @@ export class MotivosParadaController {
   @ApiOperation({ summary: 'Crear un nuevo motivo de parada' })
   @ApiResponse({ status: 201, description: 'Motivo de parada creado exitosamente' })
   @ApiResponse({ status: 409, description: 'Ya existe un motivo con ese código' })
-  async create(@Body() dto: CreateMotivoParadaDto) {
-    return this.motivosParadaService.create(dto);
+  async create(@Body() dto: CreateMotivoParadaDto, @Request() req) {
+    return this.motivosParadaService.create(dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -113,8 +114,9 @@ export class MotivosParadaController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateMotivoParadaDto,
+    @Request() req,
   ) {
-    return this.motivosParadaService.update(id, dto);
+    return this.motivosParadaService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -136,8 +138,8 @@ export class MotivosParadaController {
   @ApiOperation({ summary: 'Eliminar un motivo de parada (soft delete)' })
   @ApiResponse({ status: 200, description: 'Motivo de parada eliminado' })
   @ApiResponse({ status: 404, description: 'Motivo de parada no encontrado' })
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.motivosParadaService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    return this.motivosParadaService.remove(id, req.user?.userId, req.ip);
   }
 
   /**

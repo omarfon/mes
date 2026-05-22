@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateMovementTypeDto } from './dto/create-movement-type.dto';
 import { UpdateMovementTypeDto } from './dto/update-movement-type.dto';
@@ -22,8 +23,8 @@ export class MovementTypesController {
   constructor(private readonly movementTypesService: MovementTypesService) {}
 
   @Post()
-  async create(@Body() dto: CreateMovementTypeDto) {
-    return this.movementTypesService.create(dto);
+  async create(@Body() dto: CreateMovementTypeDto, @Request() req) {
+    return this.movementTypesService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class MovementTypesController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateMovementTypeDto,
+    @Request() req,
   ) {
-    return this.movementTypesService.update(id, dto);
+    return this.movementTypesService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,12 +53,13 @@ export class MovementTypesController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateMovementTypeDto,
+    @Request() req,
   ) {
-    return this.movementTypesService.update(id, dto);
+    return this.movementTypesService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.movementTypesService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.movementTypesService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')

@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
@@ -22,8 +23,8 @@ export class MaterialsController {
   constructor(private readonly materialsService: MaterialsService) {}
 
   @Post()
-  async create(@Body() dto: CreateMaterialDto) {
-    return this.materialsService.create(dto);
+  async create(@Body() dto: CreateMaterialDto, @Request() req) {
+    return this.materialsService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class MaterialsController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateMaterialDto,
+    @Request() req,
   ) {
-    return this.materialsService.update(id, dto);
+    return this.materialsService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,12 +53,13 @@ export class MaterialsController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateMaterialDto,
+    @Request() req,
   ) {
-    return this.materialsService.update(id, dto);
+    return this.materialsService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.materialsService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.materialsService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')

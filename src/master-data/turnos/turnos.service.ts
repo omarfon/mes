@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   NotFoundException,
   ConflictException,
@@ -10,17 +10,24 @@ import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { FilterTurnoDto } from './dto/filter-turno.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Turno';
+const MODULE = 'master-data';
+
 @Injectable()
 export class TurnosService {
   constructor(
     @InjectRepository(Turno)
     private readonly turnosRepo: Repository<Turno>,
+    private readonly auditsService: AuditsService,
   ) {}
 
   /**
    * Crear un nuevo turno
    */
-  async create(dto: CreateTurnoDto): Promise<Turno> {
+  async create(dto: CreateTurnoDto, userId?: string, ip?: string): Promise<Turno> {
     // Verificar que no exista un turno con el mismo código
     const existing = await this.turnosRepo.findOne({
       where: { codigo: dto.codigo },
@@ -32,7 +39,9 @@ export class TurnosService {
     }
 
     const turno = this.turnosRepo.create(dto);
-    return this.turnosRepo.save(turno);
+    const saved = await this.turnosRepo.save(turno);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Turno creado`, ipAddress: ip });
+    return saved;
   }
 
   /**
@@ -103,8 +112,9 @@ export class TurnosService {
   /**
    * Actualizar un turno
    */
-  async update(id: string, dto: UpdateTurnoDto): Promise<Turno> {
+  async update(id: string, dto: UpdateTurnoDto, userId?: string, ip?: string): Promise<Turno> {
     const turno = await this.findOne(id);
+    const oldValues = { ...turno };
 
     // Si se está cambiando el código, verificar que no exista otro con ese código
     if (dto.codigo && dto.codigo !== turno.codigo) {
@@ -119,15 +129,18 @@ export class TurnosService {
     }
 
     Object.assign(turno, dto);
-    return this.turnosRepo.save(turno);
+    const updated = await this.turnosRepo.save(turno);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Turno actualizado`, ipAddress: ip });
+    return updated;
   }
 
   /**
    * Soft delete de un turno
    */
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const turno = await this.findOne(id);
     await this.turnosRepo.softDelete(turno.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: turno, module: MODULE, description: `Turno eliminado`, ipAddress: ip });
   }
 
   /**

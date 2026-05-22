@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  Request,
 } from '@nestjs/common';
 import { ProcesosService } from './procesos.service';
 import { CreateProcesoDto } from './dto/create-proceso.dto';
@@ -30,8 +31,8 @@ export class ProcesosController {
   @ApiOperation({ summary: 'Crear un nuevo proceso' })
   @ApiResponse({ status: 201, description: 'Proceso creado exitosamente' })
   @ApiResponse({ status: 409, description: 'Ya existe un proceso con ese código' })
-  async create(@Body() dto: CreateProcesoDto) {
-    return this.procesosService.create(dto);
+  async create(@Body() dto: CreateProcesoDto, @Request() req) {
+    return this.procesosService.create(dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -149,8 +150,9 @@ export class ProcesosController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateProcesoDto,
+    @Request() req,
   ) {
-    return this.procesosService.update(id, dto);
+    return this.procesosService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -177,8 +179,8 @@ export class ProcesosController {
   @ApiOperation({ summary: 'Eliminar un proceso (soft delete)' })
   @ApiResponse({ status: 204, description: 'Proceso eliminado' })
   @ApiResponse({ status: 404, description: 'Proceso no encontrado' })
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.procesosService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    return this.procesosService.remove(id, req.user?.userId, req.ip);
   }
 
   /**

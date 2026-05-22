@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateOrderTypeDto } from './dto/create-order-type.dto';
 import { UpdateOrderTypeDto } from './dto/update-order-type.dto';
@@ -22,8 +23,8 @@ export class OrderTypesController {
   constructor(private readonly orderTypesService: OrderTypesService) {}
 
   @Post()
-  async create(@Body() dto: CreateOrderTypeDto) {
-    return this.orderTypesService.create(dto);
+  async create(@Body() dto: CreateOrderTypeDto, @Request() req) {
+    return this.orderTypesService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class OrderTypesController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateOrderTypeDto,
+    @Request() req,
   ) {
-    return this.orderTypesService.update(id, dto);
+    return this.orderTypesService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,12 +53,13 @@ export class OrderTypesController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateOrderTypeDto,
+    @Request() req,
   ) {
-    return this.orderTypesService.update(id, dto);
+    return this.orderTypesService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.orderTypesService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.orderTypesService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')

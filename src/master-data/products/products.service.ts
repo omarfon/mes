@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductsDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Product';
+const MODULE = 'master-data';
+
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepo: Repository<Product>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateProductDto): Promise<Product> {
+  async create(dto: CreateProductDto, userId?: string, ip?: string): Promise<Product> {
     const existing = await this.productsRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -38,7 +45,9 @@ export class ProductsService {
       erpCode: dto.erpCode,
     });
 
-    return this.productsRepo.save(product);
+    const saved = await this.productsRepo.save(product);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Product creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterProductsDto) {
@@ -91,8 +100,9 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: string, dto: UpdateProductDto): Promise<Product> {
+  async update(id: string, dto: UpdateProductDto, userId?: string, ip?: string): Promise<Product> {
     const product = await this.findOne(id);
+    const oldValues = { ...product };
 
     if (dto.code && dto.code.toUpperCase() !== product.code) {
       const exists = await this.productsRepo.findOne({
@@ -114,7 +124,9 @@ export class ProductsService {
       erpCode: dto.erpCode ?? product.erpCode,
     });
 
-    return this.productsRepo.save(product);
+    const updated = await this.productsRepo.save(product);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Product actualizado`, ipAddress: ip });
+    return updated;
   }
 
   async toggleActive(id: string, isActive: boolean): Promise<Product> {
@@ -123,7 +135,8 @@ export class ProductsService {
     return this.productsRepo.save(product);
   }
 
-  async softDelete(id: string): Promise<void> {
+  async softDelete(id: string, userId?: string, ip?: string): Promise<void> {
     await this.productsRepo.softDelete(id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, module: MODULE, description: `Product eliminado`, ipAddress: ip });
   }
 }

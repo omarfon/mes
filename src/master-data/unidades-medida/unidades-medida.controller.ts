@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  Request,
 } from '@nestjs/common';
 import { UnidadesMedidaService } from './unidades-medida.service';
 import { CreateUnidadMedidaDto } from './dto/create-unidad-medida.dto';
@@ -30,8 +31,8 @@ export class UnidadesMedidaController {
   @ApiOperation({ summary: 'Crear una nueva unidad de medida' })
   @ApiResponse({ status: 201, description: 'Unidad de medida creada exitosamente' })
   @ApiResponse({ status: 409, description: 'Ya existe una unidad con ese código o símbolo' })
-  async create(@Body() dto: CreateUnidadMedidaDto) {
-    return this.unidadesMedidaService.create(dto);
+  async create(@Body() dto: CreateUnidadMedidaDto, @Request() req) {
+    return this.unidadesMedidaService.create(dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -115,8 +116,9 @@ export class UnidadesMedidaController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateUnidadMedidaDto,
+    @Request() req,
   ) {
-    return this.unidadesMedidaService.update(id, dto);
+    return this.unidadesMedidaService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -139,8 +141,8 @@ export class UnidadesMedidaController {
   @ApiOperation({ summary: 'Eliminar una unidad de medida (soft delete)' })
   @ApiResponse({ status: 204, description: 'Unidad de medida eliminada' })
   @ApiResponse({ status: 404, description: 'Unidad de medida no encontrada' })
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.unidadesMedidaService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    return this.unidadesMedidaService.remove(id, req.user?.userId, req.ip);
   }
 
   /**

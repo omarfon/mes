@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   NotFoundException,
   ConflictException,
@@ -10,17 +10,24 @@ import { CreateProcesoDto } from './dto/create-proceso.dto';
 import { UpdateProcesoDto } from './dto/update-proceso.dto';
 import { FilterProcesoDto } from './dto/filter-proceso.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Process';
+const MODULE = 'master-data';
+
 @Injectable()
 export class ProcesosService {
   constructor(
     @InjectRepository(Proceso)
     private readonly procesosRepo: Repository<Proceso>,
+    private readonly auditsService: AuditsService,
   ) {}
 
   /**
    * Crear un nuevo proceso
    */
-  async create(dto: CreateProcesoDto): Promise<Proceso> {
+  async create(dto: CreateProcesoDto, userId?: string, ip?: string): Promise<Proceso> {
     // Verificar que no exista un proceso con el mismo código
     const existing = await this.procesosRepo.findOne({
       where: { codigo: dto.codigo },
@@ -32,7 +39,9 @@ export class ProcesosService {
     }
 
     const proceso = this.procesosRepo.create(dto);
-    return this.procesosRepo.save(proceso);
+    const saved = await this.procesosRepo.save(proceso);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Process creado`, ipAddress: ip });
+    return saved;
   }
 
   /**
@@ -171,8 +180,9 @@ export class ProcesosService {
   /**
    * Actualizar un proceso
    */
-  async update(id: string, dto: UpdateProcesoDto): Promise<Proceso> {
+  async update(id: string, dto: UpdateProcesoDto, userId?: string, ip?: string): Promise<Proceso> {
     const proceso = await this.findOne(id);
+    const oldValues = { ...proceso };
 
     // Si se está cambiando el código, verificar que no exista otro con ese código
     if (dto.codigo && dto.codigo !== proceso.codigo) {
@@ -187,15 +197,18 @@ export class ProcesosService {
     }
 
     Object.assign(proceso, dto);
-    return this.procesosRepo.save(proceso);
+    const updated = await this.procesosRepo.save(proceso);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Process actualizado`, ipAddress: ip });
+    return updated;
   }
 
   /**
    * Soft delete de un proceso
    */
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const proceso = await this.findOne(id);
     await this.procesosRepo.softDelete(proceso.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: proceso, module: MODULE, description: `Process eliminado`, ipAddress: ip });
   }
 
   /**

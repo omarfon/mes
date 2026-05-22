@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateScrapReasonDto } from './dto/create-scrap-reason.dto';
 import { UpdateScrapReasonDto } from './dto/update-scrap-reason.dto';
@@ -22,8 +23,8 @@ export class ScrapReasonsController {
   constructor(private readonly scrapReasonsService: ScrapReasonsService) {}
 
   @Post()
-  async create(@Body() dto: CreateScrapReasonDto) {
-    return this.scrapReasonsService.create(dto);
+  async create(@Body() dto: CreateScrapReasonDto, @Request() req) {
+    return this.scrapReasonsService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class ScrapReasonsController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateScrapReasonDto,
+    @Request() req,
   ) {
-    return this.scrapReasonsService.update(id, dto);
+    return this.scrapReasonsService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,12 +53,13 @@ export class ScrapReasonsController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateScrapReasonDto,
+    @Request() req,
   ) {
-    return this.scrapReasonsService.update(id, dto);
+    return this.scrapReasonsService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.scrapReasonsService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.scrapReasonsService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')

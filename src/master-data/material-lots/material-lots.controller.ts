@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateMaterialLotDto } from './dto/create-material-lot.dto';
 import { UpdateMaterialLotDto } from './dto/update-material-lot.dto';
@@ -22,8 +23,8 @@ export class MaterialLotsController {
   constructor(private readonly materialLotsService: MaterialLotsService) {}
 
   @Post()
-  async create(@Body() dto: CreateMaterialLotDto) {
-    return this.materialLotsService.create(dto);
+  async create(@Body() dto: CreateMaterialLotDto, @Request() req) {
+    return this.materialLotsService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class MaterialLotsController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateMaterialLotDto,
+    @Request() req,
   ) {
-    return this.materialLotsService.update(id, dto);
+    return this.materialLotsService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,11 +53,12 @@ export class MaterialLotsController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateMaterialLotDto,
+    @Request() req,
   ) {
-    return this.materialLotsService.update(id, dto);
+    return this.materialLotsService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.materialLotsService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.materialLotsService.remove(id, req.user?.userId, req.ip);
   }
 }

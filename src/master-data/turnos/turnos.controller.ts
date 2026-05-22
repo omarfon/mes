@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  Request,
 } from '@nestjs/common';
 import { TurnosService } from './turnos.service';
 import { CreateTurnoDto } from './dto/create-turno.dto';
@@ -30,8 +31,8 @@ export class TurnosController {
   @ApiOperation({ summary: 'Crear un nuevo turno' })
   @ApiResponse({ status: 201, description: 'Turno creado exitosamente' })
   @ApiResponse({ status: 409, description: 'Ya existe un turno con ese código' })
-  async create(@Body() dto: CreateTurnoDto) {
-    return this.turnosService.create(dto);
+  async create(@Body() dto: CreateTurnoDto, @Request() req) {
+    return this.turnosService.create(dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -80,8 +81,9 @@ export class TurnosController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateTurnoDto,
+    @Request() req,
   ) {
-    return this.turnosService.update(id, dto);
+    return this.turnosService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -104,8 +106,8 @@ export class TurnosController {
   @ApiOperation({ summary: 'Eliminar un turno (soft delete)' })
   @ApiResponse({ status: 204, description: 'Turno eliminado' })
   @ApiResponse({ status: 404, description: 'Turno no encontrado' })
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.turnosService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    return this.turnosService.remove(id, req.user?.userId, req.ip);
   }
 
   /**

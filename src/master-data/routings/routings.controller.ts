@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateRoutingDto, CreateRoutingStepDto } from './dto/create-routing.dto';
 import { UpdateRoutingDto, UpdateRoutingStepDto } from './dto/update-routing.dto';
@@ -22,8 +23,8 @@ export class RoutingsController {
   constructor(private readonly routingsService: RoutingsService) {}
 
   @Post()
-  async create(@Body() dto: CreateRoutingDto) {
-    return this.routingsService.create(dto);
+  async create(@Body() dto: CreateRoutingDto, @Request() req) {
+    return this.routingsService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class RoutingsController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateRoutingDto,
+    @Request() req,
   ) {
-    return this.routingsService.update(id, dto);
+    return this.routingsService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,12 +53,13 @@ export class RoutingsController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateRoutingDto,
+    @Request() req,
   ) {
-    return this.routingsService.update(id, dto);
+    return this.routingsService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.routingsService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.routingsService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')
@@ -86,6 +89,7 @@ export class RoutingsController {
     @Param('routingId', new ParseUUIDPipe()) routingId: string,
     @Param('stepId', new ParseUUIDPipe()) stepId: string,
     @Body() dto: UpdateRoutingStepDto,
+    @Request() req,
   ) {
     return this.routingsService.updateStep(routingId, stepId, dto);
   }

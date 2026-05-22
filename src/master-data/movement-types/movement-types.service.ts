@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateMovementTypeDto } from './dto/create-movement-type.dto';
 import { UpdateMovementTypeDto } from './dto/update-movement-type.dto';
 import { FilterMovementTypeDto } from './dto/filter-movement-type.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'MovementType';
+const MODULE = 'master-data';
+
 @Injectable()
 export class MovementTypesService {
   constructor(
     @InjectRepository(MovementType)
     private readonly movementTypesRepo: Repository<MovementType>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateMovementTypeDto): Promise<MovementType> {
+  async create(dto: CreateMovementTypeDto, userId?: string, ip?: string): Promise<MovementType> {
     const existing = await this.movementTypesRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -40,7 +47,9 @@ export class MovementTypesService {
       notes: dto.notes || '',
     });
 
-    return this.movementTypesRepo.save(movementType);
+    const saved = await this.movementTypesRepo.save(movementType);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `MovementType creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterMovementTypeDto) {
@@ -89,8 +98,9 @@ export class MovementTypesService {
     return movementType;
   }
 
-  async update(id: string, dto: UpdateMovementTypeDto): Promise<MovementType> {
+  async update(id: string, dto: UpdateMovementTypeDto, userId?: string, ip?: string): Promise<MovementType> {
     const movementType = await this.findOne(id);
+    const oldValues = { ...movementType };
 
     if (dto.code && dto.code.toUpperCase() !== movementType.code) {
       const exists = await this.movementTypesRepo.findOne({
@@ -107,12 +117,15 @@ export class MovementTypesService {
       code: dto.code ? dto.code.toUpperCase() : movementType.code,
     });
 
-    return this.movementTypesRepo.save(movementType);
+    const updated = await this.movementTypesRepo.save(movementType);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `MovementType actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const movementType = await this.findOne(id);
     await this.movementTypesRepo.softDelete(movementType.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: movementType, module: MODULE, description: `MovementType eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<MovementType> {

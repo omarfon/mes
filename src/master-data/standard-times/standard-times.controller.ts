@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateStandardTimeDto } from './dto/create-standard-time.dto';
 import { UpdateStandardTimeDto } from './dto/update-standard-time.dto';
@@ -22,8 +23,8 @@ export class StandardTimesController {
   constructor(private readonly standardTimesService: StandardTimesService) {}
 
   @Post()
-  async create(@Body() dto: CreateStandardTimeDto) {
-    return this.standardTimesService.create(dto);
+  async create(@Body() dto: CreateStandardTimeDto, @Request() req) {
+    return this.standardTimesService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class StandardTimesController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateStandardTimeDto,
+    @Request() req,
   ) {
-    return this.standardTimesService.update(id, dto);
+    return this.standardTimesService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,12 +53,13 @@ export class StandardTimesController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateStandardTimeDto,
+    @Request() req,
   ) {
-    return this.standardTimesService.update(id, dto);
+    return this.standardTimesService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.standardTimesService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.standardTimesService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')

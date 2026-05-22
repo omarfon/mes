@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
 import { FilterProductVariantDto } from './dto/filter-product-variant.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'ProductVariant';
+const MODULE = 'master-data';
+
 @Injectable()
 export class ProductVariantsService {
   constructor(
     @InjectRepository(ProductVariant)
     private readonly variantsRepo: Repository<ProductVariant>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateProductVariantDto): Promise<ProductVariant> {
+  async create(dto: CreateProductVariantDto, userId?: string, ip?: string): Promise<ProductVariant> {
     const existing = await this.variantsRepo.findOne({
       where: { sku: dto.sku.toUpperCase() },
       withDeleted: true,
@@ -39,7 +46,9 @@ export class ProductVariantsService {
       active: dto.active ?? true,
     });
 
-    return this.variantsRepo.save(variant);
+    const saved = await this.variantsRepo.save(variant);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `ProductVariant creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterProductVariantDto) {
@@ -84,8 +93,9 @@ export class ProductVariantsService {
     return variant;
   }
 
-  async update(id: string, dto: UpdateProductVariantDto): Promise<ProductVariant> {
+  async update(id: string, dto: UpdateProductVariantDto, userId?: string, ip?: string): Promise<ProductVariant> {
     const variant = await this.findOne(id);
+    const oldValues = { ...variant };
 
     if (dto.sku && dto.sku.toUpperCase() !== variant.sku) {
       const exists = await this.variantsRepo.findOne({
@@ -103,12 +113,15 @@ export class ProductVariantsService {
       productCode: dto.productCode ? dto.productCode.toUpperCase() : variant.productCode,
     });
 
-    return this.variantsRepo.save(variant);
+    const updated = await this.variantsRepo.save(variant);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `ProductVariant actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const variant = await this.findOne(id);
     await this.variantsRepo.softDelete(variant.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: variant, module: MODULE, description: `ProductVariant eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<ProductVariant> {

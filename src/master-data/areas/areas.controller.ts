@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
@@ -25,8 +26,8 @@ export class AreasController {
    * POST /master-data/areas
    */
   @Post()
-  async create(@Body() dto: CreateAreaDto) {
-    return this.areasService.create(dto);
+  async create(@Body() dto: CreateAreaDto, @Request() req) {
+    return this.areasService.create(dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -52,8 +53,9 @@ export class AreasController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateAreaDto,
+    @Request() req,
   ) {
-    return this.areasService.update(id, dto);
+    return this.areasService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -63,18 +65,18 @@ export class AreasController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateAreaDto,
+    @Request() req,
   ) {
-    return this.areasService.update(id, dto);
+    return this.areasService.update(id, dto, req.user?.userId, req.ip);
   }
-
 
   /**
    * DELETE /master-data/areas/:id
    */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.areasService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.areasService.remove(id, req.user?.userId, req.ip);
   }
 
   /**

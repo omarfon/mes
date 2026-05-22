@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateShiftGroupDto } from './dto/create-shift-group.dto';
 import { UpdateShiftGroupDto } from './dto/update-shift-group.dto';
 import { FilterShiftGroupDto } from './dto/filter-shift-group.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'ShiftGroup';
+const MODULE = 'master-data';
+
 @Injectable()
 export class ShiftGroupsService {
   constructor(
     @InjectRepository(ShiftGroup)
     private readonly shiftGroupsRepo: Repository<ShiftGroup>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateShiftGroupDto): Promise<ShiftGroup> {
+  async create(dto: CreateShiftGroupDto, userId?: string, ip?: string): Promise<ShiftGroup> {
     const existing = await this.shiftGroupsRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -38,7 +45,9 @@ export class ShiftGroupsService {
       active: dto.active ?? true,
     });
 
-    return this.shiftGroupsRepo.save(shiftGroup);
+    const saved = await this.shiftGroupsRepo.save(shiftGroup);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `ShiftGroup creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterShiftGroupDto) {
@@ -83,8 +92,9 @@ export class ShiftGroupsService {
     return shiftGroup;
   }
 
-  async update(id: string, dto: UpdateShiftGroupDto): Promise<ShiftGroup> {
+  async update(id: string, dto: UpdateShiftGroupDto, userId?: string, ip?: string): Promise<ShiftGroup> {
     const shiftGroup = await this.findOne(id);
+    const oldValues = { ...shiftGroup };
 
     if (dto.code && dto.code.toUpperCase() !== shiftGroup.code) {
       const exists = await this.shiftGroupsRepo.findOne({
@@ -102,12 +112,15 @@ export class ShiftGroupsService {
       plantCode: dto.plantCode ? dto.plantCode.toUpperCase() : shiftGroup.plantCode,
     });
 
-    return this.shiftGroupsRepo.save(shiftGroup);
+    const updated = await this.shiftGroupsRepo.save(shiftGroup);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `ShiftGroup actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const shiftGroup = await this.findOne(id);
     await this.shiftGroupsRepo.softDelete(shiftGroup.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: shiftGroup, module: MODULE, description: `ShiftGroup eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<ShiftGroup> {

@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   NotFoundException,
   ConflictException,
@@ -10,17 +10,24 @@ import { CreateMotivoParadaDto } from './dto/create-motivo-parada.dto';
 import { UpdateMotivoParadaDto } from './dto/update-motivo-parada.dto';
 import { FilterMotivoParadaDto } from './dto/filter-motivo-parada.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'MotivoParada';
+const MODULE = 'master-data';
+
 @Injectable()
 export class MotivosParadaService {
   constructor(
     @InjectRepository(MotivoParada)
     private readonly motivosRepo: Repository<MotivoParada>,
+    private readonly auditsService: AuditsService,
   ) {}
 
   /**
    * Crear un nuevo motivo de parada
    */
-  async create(dto: CreateMotivoParadaDto): Promise<MotivoParada> {
+  async create(dto: CreateMotivoParadaDto, userId?: string, ip?: string): Promise<MotivoParada> {
     // Verificar que no exista un motivo con el mismo código
     const existing = await this.motivosRepo.findOne({
       where: { codigo: dto.codigo },
@@ -32,7 +39,9 @@ export class MotivosParadaService {
     }
 
     const motivo = this.motivosRepo.create(dto);
-    return this.motivosRepo.save(motivo);
+    const saved = await this.motivosRepo.save(motivo);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `MotivoParada creado`, ipAddress: ip });
+    return saved;
   }
 
   /**
@@ -151,8 +160,9 @@ export class MotivosParadaService {
   /**
    * Actualizar un motivo de parada
    */
-  async update(id: string, dto: UpdateMotivoParadaDto): Promise<MotivoParada> {
+  async update(id: string, dto: UpdateMotivoParadaDto, userId?: string, ip?: string): Promise<MotivoParada> {
     const motivo = await this.findOne(id);
+    const oldValues = { ...motivo };
 
     // Si se está cambiando el código, verificar que no exista otro con ese código
     if (dto.codigo && dto.codigo !== motivo.codigo) {
@@ -167,16 +177,19 @@ export class MotivosParadaService {
     }
 
     Object.assign(motivo, dto);
-    return this.motivosRepo.save(motivo);
+    const updated = await this.motivosRepo.save(motivo);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `MotivoParada actualizado`, ipAddress: ip });
+    return updated;
   }
 
   /**
    * Soft delete de un motivo de parada
    */
-  async remove(id: string) {
+  async remove(id: string, userId?: string, ip?: string) {
     const motivo = await this.findOne(id);
     
     const result = await this.motivosRepo.softDelete(motivo.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: motivo, module: MODULE, description: `MotivoParada eliminado`, ipAddress: ip });
     
     if (result.affected === 0) {
       throw new NotFoundException(`El motivo de parada con id ${id} no pudo ser eliminado`);

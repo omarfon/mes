@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { FilterMaterialDto } from './dto/filter-material.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Material';
+const MODULE = 'master-data';
+
 @Injectable()
 export class MaterialsService {
   constructor(
     @InjectRepository(Material)
     private readonly materialsRepo: Repository<Material>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateMaterialDto): Promise<Material> {
+  async create(dto: CreateMaterialDto, userId?: string, ip?: string): Promise<Material> {
     const existing = await this.materialsRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -35,7 +42,9 @@ export class MaterialsService {
       active: dto.active ?? true,
     });
 
-    return this.materialsRepo.save(material);
+    const saved = await this.materialsRepo.save(material);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Material creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterMaterialDto) {
@@ -80,8 +89,9 @@ export class MaterialsService {
     return material;
   }
 
-  async update(id: string, dto: UpdateMaterialDto): Promise<Material> {
+  async update(id: string, dto: UpdateMaterialDto, userId?: string, ip?: string): Promise<Material> {
     const material = await this.findOne(id);
+    const oldValues = { ...material };
 
     if (dto.code && dto.code.toUpperCase() !== material.code) {
       const exists = await this.materialsRepo.findOne({
@@ -98,12 +108,15 @@ export class MaterialsService {
       code: dto.code ? dto.code.toUpperCase() : material.code,
     });
 
-    return this.materialsRepo.save(material);
+    const updated = await this.materialsRepo.save(material);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Material actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const material = await this.findOne(id);
     await this.materialsRepo.softDelete(material.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: material, module: MODULE, description: `Material eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<Material> {

@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  Request,
 } from '@nestjs/common';
 import { OperadoresService } from './operadores.service';
 import { CreateOperadorDto } from './dto/create-operador.dto';
@@ -30,8 +31,8 @@ export class OperadoresController {
   @ApiOperation({ summary: 'Crear un nuevo operador' })
   @ApiResponse({ status: 201, description: 'Operador creado exitosamente' })
   @ApiResponse({ status: 409, description: 'Ya existe un operador con ese código o número de empleado' })
-  async create(@Body() dto: CreateOperadorDto) {
-    return this.operadoresService.create(dto);
+  async create(@Body() dto: CreateOperadorDto, @Request() req) {
+    return this.operadoresService.create(dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -114,8 +115,9 @@ export class OperadoresController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateOperadorDto,
+    @Request() req,
   ) {
-    return this.operadoresService.update(id, dto);
+    return this.operadoresService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -170,8 +172,8 @@ export class OperadoresController {
   @ApiOperation({ summary: 'Eliminar un operador (soft delete)' })
   @ApiResponse({ status: 204, description: 'Operador eliminado' })
   @ApiResponse({ status: 404, description: 'Operador no encontrado' })
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.operadoresService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    return this.operadoresService.remove(id, req.user?.userId, req.ip);
   }
 
   /**

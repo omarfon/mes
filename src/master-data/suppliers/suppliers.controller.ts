@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
@@ -22,8 +23,8 @@ export class SuppliersController {
   constructor(private readonly suppliersService: SuppliersService) {}
 
   @Post()
-  async create(@Body() dto: CreateSupplierDto) {
-    return this.suppliersService.create(dto);
+  async create(@Body() dto: CreateSupplierDto, @Request() req) {
+    return this.suppliersService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class SuppliersController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateSupplierDto,
+    @Request() req,
   ) {
-    return this.suppliersService.update(id, dto);
+    return this.suppliersService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,12 +53,13 @@ export class SuppliersController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateSupplierDto,
+    @Request() req,
   ) {
-    return this.suppliersService.update(id, dto);
+    return this.suppliersService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.suppliersService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.suppliersService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')

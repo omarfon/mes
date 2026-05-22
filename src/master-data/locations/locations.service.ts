@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { FilterLocationDto } from './dto/filter-location.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Location';
+const MODULE = 'master-data';
+
 @Injectable()
 export class LocationsService {
   constructor(
     @InjectRepository(Location)
     private readonly locationsRepo: Repository<Location>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateLocationDto): Promise<Location> {
+  async create(dto: CreateLocationDto, userId?: string, ip?: string): Promise<Location> {
     const existing = await this.locationsRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -35,7 +42,9 @@ export class LocationsService {
       active: dto.active ?? true,
     });
 
-    return this.locationsRepo.save(location);
+    const saved = await this.locationsRepo.save(location);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Location creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterLocationDto) {
@@ -84,8 +93,9 @@ export class LocationsService {
     return location;
   }
 
-  async update(id: string, dto: UpdateLocationDto): Promise<Location> {
+  async update(id: string, dto: UpdateLocationDto, userId?: string, ip?: string): Promise<Location> {
     const location = await this.findOne(id);
+    const oldValues = { ...location };
 
     if (dto.code && dto.code.toUpperCase() !== location.code) {
       const exists = await this.locationsRepo.findOne({
@@ -105,12 +115,15 @@ export class LocationsService {
         : location.parentCode,
     });
 
-    return this.locationsRepo.save(location);
+    const updated = await this.locationsRepo.save(location);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Location actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const location = await this.findOne(id);
     await this.locationsRepo.softDelete(location.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: location, module: MODULE, description: `Location eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<Location> {

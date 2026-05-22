@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateScrapReasonDto } from './dto/create-scrap-reason.dto';
 import { UpdateScrapReasonDto } from './dto/update-scrap-reason.dto';
 import { FilterScrapReasonDto } from './dto/filter-scrap-reason.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'ScrapReason';
+const MODULE = 'master-data';
+
 @Injectable()
 export class ScrapReasonsService {
   constructor(
     @InjectRepository(ScrapReason)
     private readonly scrapReasonsRepo: Repository<ScrapReason>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateScrapReasonDto): Promise<ScrapReason> {
+  async create(dto: CreateScrapReasonDto, userId?: string, ip?: string): Promise<ScrapReason> {
     const existing = await this.scrapReasonsRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -37,7 +44,9 @@ export class ScrapReasonsService {
       active: dto.active ?? true,
     });
 
-    return this.scrapReasonsRepo.save(scrapReason);
+    const saved = await this.scrapReasonsRepo.save(scrapReason);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `ScrapReason creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterScrapReasonDto) {
@@ -82,8 +91,9 @@ export class ScrapReasonsService {
     return scrapReason;
   }
 
-  async update(id: string, dto: UpdateScrapReasonDto): Promise<ScrapReason> {
+  async update(id: string, dto: UpdateScrapReasonDto, userId?: string, ip?: string): Promise<ScrapReason> {
     const scrapReason = await this.findOne(id);
+    const oldValues = { ...scrapReason };
 
     if (dto.code && dto.code.toUpperCase() !== scrapReason.code) {
       const exists = await this.scrapReasonsRepo.findOne({
@@ -100,12 +110,15 @@ export class ScrapReasonsService {
       code: dto.code ? dto.code.toUpperCase() : scrapReason.code,
     });
 
-    return this.scrapReasonsRepo.save(scrapReason);
+    const updated = await this.scrapReasonsRepo.save(scrapReason);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `ScrapReason actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const scrapReason = await this.findOne(id);
     await this.scrapReasonsRepo.softDelete(scrapReason.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: scrapReason, module: MODULE, description: `ScrapReason eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<ScrapReason> {

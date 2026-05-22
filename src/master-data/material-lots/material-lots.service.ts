@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateMaterialLotDto } from './dto/create-material-lot.dto';
 import { UpdateMaterialLotDto } from './dto/update-material-lot.dto';
 import { FilterMaterialLotDto } from './dto/filter-material-lot.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'MaterialLot';
+const MODULE = 'master-data';
+
 @Injectable()
 export class MaterialLotsService {
   constructor(
     @InjectRepository(MaterialLot)
     private readonly materialLotsRepo: Repository<MaterialLot>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateMaterialLotDto): Promise<MaterialLot> {
+  async create(dto: CreateMaterialLotDto, userId?: string, ip?: string): Promise<MaterialLot> {
     const existing = await this.materialLotsRepo.findOne({
       where: { lotNumber: dto.lotNumber.toUpperCase() },
       withDeleted: true,
@@ -43,7 +50,9 @@ export class MaterialLotsService {
       notes: dto.notes || '',
     });
 
-    return this.materialLotsRepo.save(materialLot);
+    const saved = await this.materialLotsRepo.save(materialLot);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `MaterialLot creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterMaterialLotDto) {
@@ -92,8 +101,9 @@ export class MaterialLotsService {
     return materialLot;
   }
 
-  async update(id: string, dto: UpdateMaterialLotDto): Promise<MaterialLot> {
+  async update(id: string, dto: UpdateMaterialLotDto, userId?: string, ip?: string): Promise<MaterialLot> {
     const materialLot = await this.findOne(id);
+    const oldValues = { ...materialLot };
 
     if (dto.lotNumber && dto.lotNumber.toUpperCase() !== materialLot.lotNumber) {
       const exists = await this.materialLotsRepo.findOne({
@@ -115,11 +125,14 @@ export class MaterialLotsService {
       notes: dto.notes !== undefined ? dto.notes : materialLot.notes,
     });
 
-    return this.materialLotsRepo.save(materialLot);
+    const updated = await this.materialLotsRepo.save(materialLot);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `MaterialLot actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const materialLot = await this.findOne(id);
     await this.materialLotsRepo.softDelete(materialLot.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: materialLot, module: MODULE, description: `MaterialLot eliminado`, ipAddress: ip });
   }
 }

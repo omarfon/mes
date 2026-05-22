@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { CreateShiftGroupDto } from './dto/create-shift-group.dto';
 import { UpdateShiftGroupDto } from './dto/update-shift-group.dto';
@@ -22,8 +23,8 @@ export class ShiftGroupsController {
   constructor(private readonly shiftGroupsService: ShiftGroupsService) {}
 
   @Post()
-  async create(@Body() dto: CreateShiftGroupDto) {
-    return this.shiftGroupsService.create(dto);
+  async create(@Body() dto: CreateShiftGroupDto, @Request() req) {
+    return this.shiftGroupsService.create(dto, req.user?.userId, req.ip);
   }
 
   @Get()
@@ -40,8 +41,9 @@ export class ShiftGroupsController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateShiftGroupDto,
+    @Request() req,
   ) {
-    return this.shiftGroupsService.update(id, dto);
+    return this.shiftGroupsService.update(id, dto, req.user?.userId, req.ip);
   }
 
   /**
@@ -51,12 +53,13 @@ export class ShiftGroupsController {
   async patch(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateShiftGroupDto,
+    @Request() req,
   ) {
-    return this.shiftGroupsService.update(id, dto);
+    return this.shiftGroupsService.update(id, dto, req.user?.userId, req.ip);
   }  @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.shiftGroupsService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe()) id: string, @Request() req) {
+    await this.shiftGroupsService.remove(id, req.user?.userId, req.ip);
   }
 
   @Patch(':id/active')

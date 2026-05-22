@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -11,6 +11,12 @@ import { CreateRoutingDto, CreateRoutingStepDto } from './dto/create-routing.dto
 import { UpdateRoutingDto, UpdateRoutingStepDto } from './dto/update-routing.dto';
 import { FilterRoutingDto } from './dto/filter-routing.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Routing';
+const MODULE = 'master-data';
+
 @Injectable()
 export class RoutingsService {
   constructor(
@@ -18,9 +24,10 @@ export class RoutingsService {
     private readonly routingsRepo: Repository<Routing>,
     @InjectRepository(RoutingStep)
     private readonly stepsRepo: Repository<RoutingStep>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateRoutingDto): Promise<Routing> {
+  async create(dto: CreateRoutingDto, userId?: string, ip?: string): Promise<Routing> {
     const existing = await this.routingsRepo.findOne({
       where: { code: dto.code.toUpperCase() },
       withDeleted: true,
@@ -58,6 +65,7 @@ export class RoutingsService {
       await this.stepsRepo.save(steps);
     }
 
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Routing creado`, ipAddress: ip });
     return this.findOne(saved.id);
   }
 
@@ -107,8 +115,9 @@ export class RoutingsService {
     return routing;
   }
 
-  async update(id: string, dto: UpdateRoutingDto): Promise<Routing> {
+  async update(id: string, dto: UpdateRoutingDto, userId?: string, ip?: string): Promise<Routing> {
     const routing = await this.findOne(id);
+    const oldValues = { ...routing };
 
     if (dto.code && dto.code.toUpperCase() !== routing.code) {
       const exists = await this.routingsRepo.findOne({
@@ -126,12 +135,15 @@ export class RoutingsService {
       productCode: dto.productCode ? dto.productCode.toUpperCase() : routing.productCode,
     });
 
-    return this.routingsRepo.save(routing);
+    const updated = await this.routingsRepo.save(routing);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Routing actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const routing = await this.findOne(id);
     await this.routingsRepo.softDelete(routing.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: routing, module: MODULE, description: `Routing eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<Routing> {

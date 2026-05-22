@@ -1,4 +1,4 @@
-import {
+﻿import {
   Injectable,
   ConflictException,
   NotFoundException,
@@ -10,14 +10,21 @@ import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { FilterSupplierDto } from './dto/filter-supplier.dto';
 
+import { AuditsService } from '../../traceability/audits/audits.service';
+import { AuditAction } from '../../traceability/audits/entities/audit.entity';
+
+const ENTITY_TYPE = 'Supplier';
+const MODULE = 'master-data';
+
 @Injectable()
 export class SuppliersService {
   constructor(
     @InjectRepository(Supplier)
     private readonly suppliersRepo: Repository<Supplier>,
+    private readonly auditsService: AuditsService,
   ) {}
 
-  async create(dto: CreateSupplierDto): Promise<Supplier> {
+  async create(dto: CreateSupplierDto, userId?: string, ip?: string): Promise<Supplier> {
     const existing = await this.suppliersRepo.findOne({
       where: { ruc: dto.ruc },
       withDeleted: true,
@@ -36,7 +43,9 @@ export class SuppliersService {
       active: dto.active ?? true,
     });
 
-    return this.suppliersRepo.save(supplier);
+    const saved = await this.suppliersRepo.save(supplier);
+    await this.auditsService.create({ action: AuditAction.CREATE, entityType: ENTITY_TYPE, entityId: saved.id, userId, newValues: saved, module: MODULE, description: `Supplier creado`, ipAddress: ip });
+    return saved;
   }
 
   async findAll(filter: FilterSupplierDto) {
@@ -77,8 +86,9 @@ export class SuppliersService {
     return supplier;
   }
 
-  async update(id: string, dto: UpdateSupplierDto): Promise<Supplier> {
+  async update(id: string, dto: UpdateSupplierDto, userId?: string, ip?: string): Promise<Supplier> {
     const supplier = await this.findOne(id);
+    const oldValues = { ...supplier };
 
     if (dto.ruc && dto.ruc !== supplier.ruc) {
       const exists = await this.suppliersRepo.findOne({
@@ -92,12 +102,15 @@ export class SuppliersService {
 
     Object.assign(supplier, dto);
 
-    return this.suppliersRepo.save(supplier);
+    const updated = await this.suppliersRepo.save(supplier);
+    await this.auditsService.create({ action: AuditAction.UPDATE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues, newValues: updated, module: MODULE, description: `Supplier actualizado`, ipAddress: ip });
+    return updated;
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId?: string, ip?: string): Promise<void> {
     const supplier = await this.findOne(id);
     await this.suppliersRepo.softDelete(supplier.id);
+    await this.auditsService.create({ action: AuditAction.DELETE, entityType: ENTITY_TYPE, entityId: id, userId, oldValues: supplier, module: MODULE, description: `Supplier eliminado`, ipAddress: ip });
   }
 
   async toggleActive(id: string, active: boolean): Promise<Supplier> {
